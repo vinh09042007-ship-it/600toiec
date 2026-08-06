@@ -23,7 +23,8 @@ class PlayerCamera:
         
         # Initial camera setup (snap to position)
         camera.position = self.target.position + self.offset
-        camera.look_at(self.target)
+        camera.fov = 70
+        camera.look_at(self.target.position + Vec3(0, 1.5, 0))
 
     def update(self, delta_time: float) -> None:
         """
@@ -43,5 +44,5 @@ class PlayerCamera:
             delta_time * const.CAMERA_LERP_SPEED
         )
         
-        # Always look at the player
-        camera.look_at(self.target)
+        # Always look at the player's upper body
+        camera.look_at(self.target.position + Vec3(0, 1.5, 0))

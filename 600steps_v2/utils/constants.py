@@ -19,7 +19,7 @@ DEFAULT_LAYER: int = 0
 COLLISION_MASK: int = 1
 
 # Camera constants
-CAMERA_OFFSET: tuple[float, float, float] = (0.0, 4.0, -12.0)
+CAMERA_OFFSET: tuple[float, float, float] = (0.0, 15.0, -25.0)
 CAMERA_LERP_SPEED: float = 5.0
 
 # World / Campus constants
