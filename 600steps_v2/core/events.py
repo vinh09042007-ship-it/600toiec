@@ -14,6 +14,10 @@ class Events(Enum):
     
     NPC_INTERACT = auto()
     
+    QUEST_ACCEPTED = auto()
+    QUEST_COMPLETED = auto()
+    BUILDING_UNLOCKED = auto()
+    
     QUIZ_OPEN = auto()
     QUIZ_START = auto()
     QUIZ_FINISH = auto()

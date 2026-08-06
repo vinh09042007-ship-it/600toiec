@@ -16,6 +16,10 @@ from scenes.building_scene import BuildingScene
 from scenes.question_scene import QuestionScene
 from player.profile import PlayerProfile
 from core.save_manager import SaveManager
+from core.quest_manager import QuestManager
+from ui.notification import NotificationUI
+from ui.quest_log import QuestLogUI
+from ursina import camera
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -46,8 +50,15 @@ class Game:
         # Initialize player profile via SaveManager
         self.player_profile = SaveManager.load_profile()
         
+        # Initialize Quest System
+        self.quest_manager = QuestManager(self.player_profile, self.event_bus)
+        self.notification_ui = NotificationUI(camera.ui)
+        self.quest_manager.notification_ui = self.notification_ui
+        self.quest_log_ui = QuestLogUI(camera.ui, self.quest_manager)
+        
         # Initialize Scene Manager
         self.scene_manager = SceneManager(player_profile=self.player_profile)
+        self.scene_manager.quest_manager = self.quest_manager # Inject into SceneManager
         
         # Initialize and register scenes
         campus = CampusScene(self.scene_manager)
@@ -80,6 +91,7 @@ class Game:
         """Update game logic based on current state."""
         # Called every frame by GameUpdater
         self.scene_manager.update(time.dt)
+        self.quest_log_ui.update()
 
     def _render(self) -> None:
         """Render the current state to the screen."""

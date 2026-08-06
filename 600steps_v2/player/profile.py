@@ -23,6 +23,11 @@ class PlayerProfile:
         self.reading_completed = 0
         self.exam_completed = 0
         
+        # Quest Tracking
+        self.active_quest_id: str | None = None
+        self.quest_progress: int = 0
+        self.completed_quests: list[str] = []
+        
         # Global Statistics
         self.total_correct_answers = 0
         self.total_wrong_answers = 0
@@ -108,7 +113,10 @@ class PlayerProfile:
                 "Listening": {"completed": self.listening_completed},
                 "Reading": {"completed": self.reading_completed},
                 "Exam": {"completed": self.exam_completed},
-            }
+            },
+            "active_quest_id": self.active_quest_id,
+            "quest_progress": self.quest_progress,
+            "completed_quests": self.completed_quests
         }
 
     @classmethod
@@ -135,5 +143,10 @@ class PlayerProfile:
         profile.listening_completed = building_stats.get("Listening", {}).get("completed", 0)
         profile.reading_completed = building_stats.get("Reading", {}).get("completed", 0)
         profile.exam_completed = building_stats.get("Exam", {}).get("completed", 0)
+        
+        # Quests
+        profile.active_quest_id = data.get("active_quest_id")
+        profile.quest_progress = data.get("quest_progress", 0)
+        profile.completed_quests = data.get("completed_quests", [])
         
         return profile

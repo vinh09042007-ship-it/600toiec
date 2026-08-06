@@ -23,9 +23,12 @@ class InteractionManager:
         """
         self.player = player
         self.campus = campus
-        self.nearest_building = None
+        self.npcs = []
+        self.nearest_interactable = None
+        self.interactable_type = None # 'building' or 'npc'
         self.last_found = None
         self.on_interact = None
+        self.on_talk = None
         
         # UI Prompt Text
         self.prompt = Text(
@@ -41,44 +44,57 @@ class InteractionManager:
 
     def update(self) -> None:
         """
-        Checks distance to buildings and updates the interaction prompt.
+        Checks distance to interactables and updates the prompt.
         Should be called every frame.
         """
-        self._find_nearest_building()
+        self._find_nearest_interactable()
         self._update_prompt()
         self._check_input()
 
-    def _find_nearest_building(self) -> None:
+    def _find_nearest_interactable(self) -> None:
         """
-        Finds the nearest building entrance within interaction range.
-        Uses 2D (X, Z) distance to ignore Y height differences.
+        Finds the nearest building or NPC within interaction range.
         """
-        self.nearest_building = None
+        self.nearest_interactable = None
+        self.interactable_type = None
         min_dist = const.INTERACTION_DISTANCE
         
         px, py, pz = self.player.position
         
+        # Check Buildings
         for building in self.campus.buildings:
             bx, by, bz = building.entrance_position
-            
-            # Calculate 2D distance on X-Z plane to the entrance
             dist = math.sqrt((px - bx)**2 + (pz - bz)**2)
             
             if dist <= min_dist:
                 min_dist = dist
-                self.nearest_building = building
+                self.nearest_interactable = building
+                self.interactable_type = 'building'
+                
+        # Check NPCs
+        for npc in self.npcs:
+            nx, ny, nz = npc.interact_position
+            dist = math.sqrt((px - nx)**2 + (pz - nz)**2)
+            
+            if dist <= min_dist:
+                min_dist = dist
+                self.nearest_interactable = npc
+                self.interactable_type = 'npc'
 
     def _update_prompt(self) -> None:
         """
         Shows or hides the interaction prompt based on proximity.
         """
-        if self.nearest_building:
-            # 7. Debug prompt: Print only when entering range for the first time
-            if self.nearest_building != self.last_found:
-                print(f"Found building: {self.nearest_building.name}")
-                self.last_found = self.nearest_building
+        if self.nearest_interactable:
+            if self.nearest_interactable != self.last_found:
+                name = self.nearest_interactable.name if self.interactable_type == 'building' else self.nearest_interactable.npc_name
+                print(f"Found {self.interactable_type}: {name}")
+                self.last_found = self.nearest_interactable
                 
-            self.prompt.text = f"[E] Enter {self.nearest_building.name}"
+            if self.interactable_type == 'building':
+                self.prompt.text = f"[E] Enter {self.nearest_interactable.name}"
+            else:
+                self.prompt.text = f"[E] Talk to {self.nearest_interactable.npc_name}"
             self.prompt.enabled = True
         else:
             self.last_found = None
@@ -92,30 +108,32 @@ class InteractionManager:
         is_pressed = held_keys['e']
         
         if is_pressed and not self.was_pressed:
-            print("Pressed E")
-            if self.nearest_building:
-                print(f"Entering {self.nearest_building.name}...")
-                
-                # Show temporary on-screen message
-                temp_msg = Text(
-                    text=f"Entered {self.nearest_building.name}",
-                    position=(0, 0),
-                    origin=(0, 0),
-                    scale=2.5,
-                    color=color.green
-                )
-                
-                # Destroy the message after 2 seconds
-                invoke(destroy, temp_msg, delay=2.0)
-                
+            if self.nearest_interactable:
                 # Hide the prompt immediately
                 self.prompt.enabled = False
                 
-                # Trigger callback
-                if self.on_interact:
-                    self.on_interact(self.nearest_building.name)
-                
-                # Clear nearest_building so interaction doesn't re-trigger
-                self.nearest_building = None
+                if self.interactable_type == 'building':
+                    print(f"Entering {self.nearest_interactable.name}...")
+                    
+                    # Show temporary on-screen message
+                    temp_msg = Text(
+                        text=f"Entered {self.nearest_interactable.name}",
+                        position=(0, 0),
+                        origin=(0, 0),
+                        scale=2.5,
+                        color=color.green
+                    )
+                    invoke(destroy, temp_msg, delay=2.0)
+                    
+                    if self.on_interact:
+                        self.on_interact(self.nearest_interactable.name)
+                        
+                elif self.interactable_type == 'npc':
+                    print(f"Talking to {self.nearest_interactable.npc_name}...")
+                    if self.on_talk:
+                        self.on_talk(self.nearest_interactable)
+                        
+                # Clear nearest so interaction doesn't re-trigger instantly
+                self.nearest_interactable = None
         
         self.was_pressed = is_pressed

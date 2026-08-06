@@ -24,5 +24,8 @@
         "Exam": {
             "completed": 0
         }
-    }
+    },
+    "active_quest_id": null,
+    "quest_progress": 0,
+    "completed_quests": []
 }

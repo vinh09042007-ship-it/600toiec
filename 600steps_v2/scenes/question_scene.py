@@ -1,11 +1,14 @@
 """
 Question framework scene for TOEIC gameplay.
 """
-from ursina import Entity, Text, color, held_keys, camera, invoke, destroy
+from ursina import Entity, Text, color, held_keys, camera, invoke, destroy, time
 from .base_scene import BaseScene
 from core.quiz import QuestionManager
 from core.score_manager import ScoreManager
 from core.question_loader import QuestionLoader
+from core.mini_game_manager import MiniGameManager
+from ui.combo_popup import ComboPopup
+from ui.rating_popup import RatingPopup
 
 class QuestionScene(BaseScene):
     """
@@ -92,7 +95,10 @@ class QuestionScene(BaseScene):
         self.building_name = ""
         self.manager = None
         self.score_manager = None
+        self.minigame_manager = None
         self.has_answered = False
+        self.question_start_time = 0.0
+        self.rating_ui = None
         
         # Debounce
         self.was_key_pressed = False
@@ -107,12 +113,17 @@ class QuestionScene(BaseScene):
         loaded_questions = QuestionLoader.load_questions(category)
         
         self.manager = QuestionManager(loaded_questions)
-        self.score_manager = ScoreManager(total_questions=self.manager.get_total_questions())
+        total_q = self.manager.get_total_questions()
+        self.score_manager = ScoreManager(total_questions=total_q)
+        self.minigame_manager = MiniGameManager(total_questions=total_q)
         
         # Reset state
         self.has_answered = False
         self.feedback_text.enabled = False
         self.result_text.enabled = False
+        if self.rating_ui:
+            destroy(self.rating_ui)
+            self.rating_ui = None
         
         self.score_text.enabled = True
         self.correct_text.enabled = True
@@ -166,6 +177,8 @@ class QuestionScene(BaseScene):
         self.answer_b.text = f"B. {q.choices[1]}"
         self.answer_c.text = f"C. {q.choices[2]}"
         self.answer_d.text = f"D. {q.choices[3]}"
+        
+        self.question_start_time = time.time()
 
     def _update_score_ui(self) -> None:
         """Updates the live score tracking texts."""
@@ -194,20 +207,15 @@ class QuestionScene(BaseScene):
         profile = self.scene_manager.player_profile
         profile.add_practice_result(self.score_manager, self.building_name)
         
-        report = (
-            "Practice Complete\n\n"
-            f"Practice Score: {self.score_manager.current_score}\n"
-            f"Coins Earned: +{self.score_manager.earned_coins}\n"
-            f"EXP Earned: +{self.score_manager.earned_exp}\n\n"
-            f"Current Level: {profile.current_level}\n"
-            f"Total Coins: {profile.total_coins}\n"
-            f"Total EXP: {profile.total_exp}\n"
-            f"Overall Accuracy: {profile.get_overall_accuracy():.1f}%"
-        )
+        rating = self.minigame_manager.calculate_rating()
         
-        self.result_text.text = report
-        self.result_text.enabled = True
-        self.instruction_text.text = "ESC to Return"
+        self.rating_ui = RatingPopup.show(
+            camera_ui=camera.ui,
+            rating=rating,
+            score=self.score_manager.current_score,
+            coins=self.score_manager.earned_coins,
+            exp=self.score_manager.earned_exp
+        )
 
     def update_scene(self, delta_time: float) -> None:
         """Handle user input for answering and returning."""
@@ -236,6 +244,10 @@ class QuestionScene(BaseScene):
         
         q = self.manager.get_current_question()
         is_correct = self.manager.submit_answer(choice)
+        time_taken = time.time() - self.question_start_time
+        
+        # Record mini-game performance
+        self.minigame_manager.submit_result(is_correct, time_taken)
         
         # Register score
         self.score_manager.submit_result(is_correct)
@@ -244,6 +256,18 @@ class QuestionScene(BaseScene):
         if is_correct:
             self.feedback_text.text = "Correct!"
             self.feedback_text.color = color.green
+            
+            # Fast bonus feedback
+            if time_taken <= 3.0:
+                ComboPopup.show(camera.ui, "FAST!", position=(0.2, 0.2), popup_color=color.cyan)
+                
+            # Combo feedback
+            if self.minigame_manager.current_combo >= 2:
+                ComboPopup.show(camera.ui, f"COMBO x{self.minigame_manager.current_combo}", position=(-0.4, 0.2))
+            
+            # Notify QuestManager
+            if hasattr(self.scene_manager, 'quest_manager'):
+                self.scene_manager.quest_manager.add_progress(1, self.building_name)
         else:
             correct_letter = ["A", "B", "C", "D"][q.correct_index - 1]
             self.feedback_text.text = f"Wrong!\nCorrect Answer: {correct_letter}"
