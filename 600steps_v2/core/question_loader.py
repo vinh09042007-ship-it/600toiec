@@ -33,42 +33,25 @@ class QuestionLoader:
         print(f"Exists: {file_path.exists()}")
         
         try:
-            # 1. Verify file exists
-            if not file_path.exists():
-                raise FileNotFoundError(f"Missing database for '{category}'.")
-                
-            # 2. Verify JSON is valid
-            with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                
-            if not isinstance(data, list):
-                raise ValueError("JSON root must be an array.")
-                
-            if len(data) == 0:
-                raise ValueError("Question list is empty.")
-                
             questions = []
             
-            # 3. Verify format and convert
-            for item in data:
-                if "question" not in item or "choices" not in item or "answer" not in item:
-                    raise KeyError("Missing required keys ('question', 'choices', 'answer').")
+            if category == "exam":
+                # For exam, load all available json files in the directory
+                questions_dir = base_dir / "assets" / "questions"
+                if not questions_dir.exists():
+                    raise FileNotFoundError("Questions directory not found.")
+                
+                for json_file in questions_dir.glob("*.json"):
+                    questions.extend(QuestionLoader._parse_json_file(json_file))
+                
+                if not questions:
+                    raise ValueError("No questions found in any database for exam.")
+            else:
+                # 1. Verify file exists
+                if not file_path.exists():
+                    raise FileNotFoundError(f"Missing database for '{category}'.")
                     
-                if not isinstance(item["choices"], list) or len(item["choices"]) != 4:
-                    raise ValueError("Choices must be an array of exactly 4 strings.")
-                    
-                # Convert 0-indexed JSON answer to 1-indexed Question correct_index
-                correct_idx = int(item["answer"]) + 1
-                if correct_idx < 1 or correct_idx > 4:
-                    raise ValueError("Answer must be between 0 and 3.")
-                    
-                questions.append(
-                    Question(
-                        text=str(item["question"]),
-                        choices=[str(c) for c in item["choices"]],
-                        correct_index=correct_idx
-                    )
-                )
+                questions = QuestionLoader._parse_json_file(file_path)
                 
             total_db_size = len(questions)
             print(f"Database size: {total_db_size}")
@@ -93,7 +76,10 @@ class QuestionLoader:
             return selected_questions
             
         except Exception as e:
-            print(f"Error loading {file_path}:\n{type(e).__name__}: {e}")
+            # Print real exception for debugging
+            import traceback
+            traceback.print_exc()
+            print(f"Error loading {category}:\n{type(e).__name__}: {e}")
             # Fallback question
             return [
                 Question(
@@ -102,3 +88,46 @@ class QuestionLoader:
                     correct_index=1
                 )
             ]
+
+    @staticmethod
+    def _parse_json_file(file_path: Path) -> List[Question]:
+        """Helper to parse a single JSON file into a list of Questions."""
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            
+        if not isinstance(data, list):
+            raise ValueError(f"JSON root must be an array in {file_path.name}.")
+            
+        if len(data) == 0:
+            raise ValueError(f"Question list is empty in {file_path.name}.")
+            
+        questions = []
+        for item in data:
+            if "question" not in item or "choices" not in item or "answer" not in item:
+                raise KeyError(f"Missing required keys in {file_path.name}.")
+                
+            if not isinstance(item["choices"], list) or len(item["choices"]) != 4:
+                raise ValueError(f"Choices must be an array of exactly 4 strings in {file_path.name}.")
+                
+            correct_idx = int(item["answer"]) + 1
+            if correct_idx < 1 or correct_idx > 4:
+                raise ValueError(f"Answer must be between 0 and 3 in {file_path.name}.")
+                
+            # Extract optional context
+            context_text = None
+            if "passage" in item:
+                context_text = str(item["passage"])
+            elif "script" in item:
+                context_text = str(item["script"])
+            elif "context" in item:
+                context_text = str(item["context"])
+                
+            questions.append(
+                Question(
+                    text=str(item["question"]),
+                    choices=[str(c) for c in item["choices"]],
+                    correct_index=correct_idx,
+                    context=context_text
+                )
+            )
+        return questions

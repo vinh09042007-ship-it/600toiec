@@ -1,4 +1,4 @@
-from ursina import Entity, Text, color, invoke, destroy
+from ursina import Entity, Text, color, invoke, destroy, curve
 
 class QuestCelebration(Entity):
     """
@@ -59,10 +59,10 @@ class QuestCelebration(Entity):
             )
             
         # Animate in
-        container.animate_scale(1, duration=0.5, curve='out_back')
+        container.animate_scale(1, duration=0.5, curve=curve.out_back)
         
         # Animate out after 3 seconds
-        invoke(container.animate_scale, 0, duration=0.3, curve='in_back', delay=3.0)
+        invoke(container.animate_scale, 0, duration=0.3, curve=curve.in_back, delay=3.0)
         
         # Destroy entirely after animation finishes
         invoke(destroy, container, delay=3.4)

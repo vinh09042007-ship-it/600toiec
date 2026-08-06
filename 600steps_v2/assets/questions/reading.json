@@ -1,5 +1,6 @@
 [
     {
+        "passage": "Notice to all employees:\nStarting next Monday, the company cafeteria will offer a new vegetarian menu.\nThis change is part of our commitment to healthier workplace policies.",
         "question": "What is the main topic of the passage?",
         "choices": [
             "Company policies",
@@ -7,7 +8,7 @@
             "Employee vacation time",
             "Cafeteria menu"
         ],
-        "answer": 1
+        "answer": 3
     },
     {
         "question": "According to the article, why did profits increase?",

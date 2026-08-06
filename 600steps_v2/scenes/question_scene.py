@@ -57,6 +57,16 @@ class QuestionScene(BaseScene):
             parent=self
         )
         
+        self.context_text = Text(
+            text="",
+            position=(0, 0.20),
+            origin=(0, 0.5), # Top-center alignment
+            scale=1.2,
+            color=color.light_gray,
+            parent=self,
+            enabled=False
+        )
+        
         self.answer_a = Text(text="A. ", position=(-0.2, 0), scale=1.5, parent=self)
         self.answer_b = Text(text="B. ", position=(-0.2, -0.05), scale=1.5, parent=self)
         self.answer_c = Text(text="C. ", position=(-0.2, -0.1), scale=1.5, parent=self)
@@ -133,6 +143,7 @@ class QuestionScene(BaseScene):
         self.building_title.enabled = True
         self.question_number.enabled = True
         self.question_text.enabled = True
+        self.context_text.enabled = False
         self.answer_a.enabled = True
         self.answer_b.enabled = True
         self.answer_c.enabled = True
@@ -153,6 +164,7 @@ class QuestionScene(BaseScene):
         self.building_title.parent = camera.ui
         self.question_number.parent = camera.ui
         self.question_text.parent = camera.ui
+        self.context_text.parent = camera.ui
         self.answer_a.parent = camera.ui
         self.answer_b.parent = camera.ui
         self.answer_c.parent = camera.ui
@@ -172,7 +184,52 @@ class QuestionScene(BaseScene):
         total = self.manager.get_total_questions()
         
         self.question_number.text = f"Question {curr_idx} / {total}"
-        self.question_text.text = q.text
+        
+        category = self.building_name.lower()
+        if category in ["reading", "listening", "exam"]:
+            if q.context:
+                prefix = "Reading Passage\n\n" if category == "reading" else "Listening Script\n\n"
+                if category == "exam":
+                    prefix = "Passage / Script\n\n"
+                    
+                self.context_text.text = prefix + q.context
+                self.context_text.enabled = True
+                
+                # Shift UI down to make room
+                self.question_text.position = (0, -0.05)
+                self.answer_a.position = (-0.2, -0.15)
+                self.answer_b.position = (-0.2, -0.2)
+                self.answer_c.position = (-0.2, -0.25)
+                self.answer_d.position = (-0.2, -0.3)
+                self.instruction_text.position = (0, -0.4)
+                
+                self.question_text.text = q.text
+                self.question_text.color = color.white
+            else:
+                self.context_text.enabled = False
+                # Restore default positions
+                self.question_text.position = (0, 0.15)
+                self.answer_a.position = (-0.2, 0)
+                self.answer_b.position = (-0.2, -0.05)
+                self.answer_c.position = (-0.2, -0.1)
+                self.answer_d.position = (-0.2, -0.15)
+                self.instruction_text.position = (0, -0.3)
+                
+                self.question_text.text = "[MISSING DATA] This question requires a passage/script.\n\n" + q.text
+                self.question_text.color = color.orange
+        else:
+            self.context_text.enabled = False
+            # Restore default positions
+            self.question_text.position = (0, 0.15)
+            self.answer_a.position = (-0.2, 0)
+            self.answer_b.position = (-0.2, -0.05)
+            self.answer_c.position = (-0.2, -0.1)
+            self.answer_d.position = (-0.2, -0.15)
+            self.instruction_text.position = (0, -0.3)
+            
+            self.question_text.text = q.text
+            self.question_text.color = color.white
+
         self.answer_a.text = f"A. {q.choices[0]}"
         self.answer_b.text = f"B. {q.choices[1]}"
         self.answer_c.text = f"C. {q.choices[2]}"
@@ -197,11 +254,13 @@ class QuestionScene(BaseScene):
         self.building_title.enabled = False
         self.question_number.enabled = False
         self.question_text.enabled = False
+        self.context_text.enabled = False
         self.answer_a.enabled = False
         self.answer_b.enabled = False
         self.answer_c.enabled = False
         self.answer_d.enabled = False
         self.feedback_text.enabled = False
+        self.instruction_text.enabled = False
         
         # Merge session stats into the persistent global profile
         profile = self.scene_manager.player_profile
@@ -209,12 +268,16 @@ class QuestionScene(BaseScene):
         
         rating = self.minigame_manager.calculate_rating()
         
+        is_exam = self.building_name.lower() == "exam"
+        
         self.rating_ui = RatingPopup.show(
             camera_ui=camera.ui,
             rating=rating,
             score=self.score_manager.current_score,
             coins=self.score_manager.earned_coins,
-            exp=self.score_manager.earned_exp
+            exp=self.score_manager.earned_exp,
+            is_exam=is_exam,
+            correct_answers=self.score_manager.correct_answers
         )
 
     def update_scene(self, delta_time: float) -> None:
@@ -310,6 +373,7 @@ class QuestionScene(BaseScene):
         self.building_title.parent = self
         self.question_number.parent = self
         self.question_text.parent = self
+        self.context_text.parent = self
         self.answer_a.parent = self
         self.answer_b.parent = self
         self.answer_c.parent = self

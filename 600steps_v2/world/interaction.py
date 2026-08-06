@@ -1,7 +1,7 @@
 """
 Handles gameplay interactions with buildings and other world objects.
 """
-from ursina import Text, held_keys, invoke, destroy, color
+from ursina import Text, held_keys, invoke, destroy, color, Entity, camera
 import math
 from typing import Optional
 from .campus import Campus
@@ -95,6 +95,7 @@ class InteractionManager:
                 self.prompt.text = f"[E] Enter {self.nearest_interactable.name}"
             else:
                 self.prompt.text = f"[E] Talk to {self.nearest_interactable.npc_name}"
+                
             self.prompt.enabled = True
         else:
             self.last_found = None
@@ -114,16 +115,6 @@ class InteractionManager:
                 
                 if self.interactable_type == 'building':
                     print(f"Entering {self.nearest_interactable.name}...")
-                    
-                    # Show temporary on-screen message
-                    temp_msg = Text(
-                        text=f"Entered {self.nearest_interactable.name}",
-                        position=(0, 0),
-                        origin=(0, 0),
-                        scale=2.5,
-                        color=color.green
-                    )
-                    invoke(destroy, temp_msg, delay=2.0)
                     
                     if self.on_interact:
                         self.on_interact(self.nearest_interactable.name)

@@ -12,6 +12,7 @@ class Question:
     text: str
     choices: List[str]
     correct_index: int  # 1-indexed (1=A, 2=B, 3=C, 4=D)
+    context: Optional[str] = None
 
 
 class QuestionManager:

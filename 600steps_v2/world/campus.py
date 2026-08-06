@@ -121,4 +121,5 @@ class Campus:
         # Add visual entities to tracking lists
         for b in self.buildings:
             self.entities.append(b.entity)
+            self.entities.append(b.entrance_indicator)
             self.obstacles.append(b.entity)

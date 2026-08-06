@@ -93,8 +93,15 @@ class BuildingScene(BaseScene):
         Setup state for the specific building entered.
         """
         self.building_name = kwargs.get("building_name", "Unknown")
-        self.title_text.text = f"{self.building_name} Building"
-        self.desc_text.text = self.descriptions.get(self.building_name, "Welcome.")
+        
+        if self.building_name.lower() == "exam":
+            self.title_text.text = "Final TOEIC Examination"
+            self.desc_text.text = "Are you ready?\nThis exam represents the end of your learning journey."
+            self.instruction_text.text = "[ENTER] Start Exam\n[ESC] Cancel"
+        else:
+            self.title_text.text = f"{self.building_name} Building"
+            self.desc_text.text = self.descriptions.get(self.building_name, "Welcome.")
+            self.instruction_text.text = "ENTER to Start\nESC to Return"
         
         # We must detach the UI elements from the 3D scene and attach to UI camera so they render as 2D Text
         from ursina import camera

@@ -14,83 +14,88 @@ class QuestManager:
     QUESTS: Dict[str, Quest] = {
         "tutorial_grammar": Quest(
             id="tutorial_grammar",
-            title="First Lesson",
-            description="Talk to the Professor.",
-            objective_text="Visit Grammar Hall and talk to the Professor.",
+            title="Welcome to Campus",
+            description="Talk to the Receptionist.",
+            objective_text="Visit the Grammar Building.",
             target_building="Grammar",
             target_amount=0,
-            reward_coin=20,
-            reward_exp=40,
+            reward_coin=0,
+            reward_exp=0,
             npc_name="Receptionist",
-            receiver_npc="Professor",
+            receiver_npc="Grammar Professor",
             next_quest_id="grammar_lesson",
-            dialogue_offer=["Welcome to 600 Steps!", "Are you ready to start your learning journey?", "Go meet the Professor in the Grammar building."],
-            dialogue_active=["Go meet the Professor in the Grammar building."],
-            dialogue_ready=["Ah, the new student.", "Welcome to Grammar Hall."]
+            dialogue_offer=[
+                "Welcome to the TOEIC Training Campus.",
+                "Your goal is to achieve a TOEIC score of 600.",
+                "Complete learning buildings, finish small tasks, and then take the final exam.",
+                "Good luck!"
+            ],
+            dialogue_active=["Talk to the Grammar Professor."],
+            dialogue_ready=["Welcome to Grammar Hall."]
         ),
         "grammar_lesson": Quest(
             id="grammar_lesson",
             title="Grammar Basics",
-            description="The Professor wants to test your grammar skills.",
-            objective_text="Complete 10 Grammar questions.",
+            description="Complete the grammar lesson.",
+            objective_text="Complete Grammar practice.",
             target_building="Grammar",
             target_amount=10,
             reward_coin=50,
             reward_exp=100,
-            npc_name="Professor",
-            receiver_npc="Professor",
+            npc_name="Grammar Professor",
+            receiver_npc="Grammar Professor",
+            next_quest_id="vocabulary_lesson",
+            dialogue_offer=["Grammar is the foundation of communication.", "Complete today's grammar practice."],
+            dialogue_active=["Complete today's grammar practice inside."],
+            dialogue_ready=["Excellent work."]
+        ),
+        "vocabulary_lesson": Quest(
+            id="vocabulary_lesson",
+            title="Vocabulary Building",
+            description="Complete the vocabulary lesson.",
+            objective_text="Complete Vocabulary practice.",
+            target_building="Vocabulary",
+            target_amount=10,
+            reward_coin=50,
+            reward_exp=100,
+            npc_name="Vocabulary Professor",
+            receiver_npc="Vocabulary Professor",
+            next_quest_id="listening_lesson",
+            dialogue_offer=["A strong vocabulary makes every section easier.", "Complete today's vocabulary practice."],
+            dialogue_active=["Complete today's vocabulary practice inside."],
+            dialogue_ready=["Great job."]
+        ),
+        "listening_lesson": Quest(
+            id="listening_lesson",
+            title="Active Listening",
+            description="Complete the listening lesson.",
+            objective_text="Complete Listening practice.",
+            target_building="Listening",
+            target_amount=10,
+            reward_coin=50,
+            reward_exp=100,
+            npc_name="Listening Professor",
+            receiver_npc="Listening Professor",
             next_quest_id="reading_lesson",
-            dialogue_offer=["Show me what you can do.", "Complete today's lesson."],
-            dialogue_active=["Complete today's lesson in the Grammar hall."],
-            dialogue_ready=["Excellent work.", "The Reading hall is now open to you."]
+            dialogue_offer=["Listening is an important TOEIC skill.", "Finish today's listening practice."],
+            dialogue_active=["Finish today's listening practice inside."],
+            dialogue_ready=["Excellent."]
         ),
         "reading_lesson": Quest(
             id="reading_lesson",
             title="Reading Comprehension",
-            description="The Librarian needs help organizing reading tests.",
-            objective_text="Complete 5 Reading questions.",
+            description="Complete the reading lesson.",
+            objective_text="Complete Reading practice.",
             target_building="Reading",
-            target_amount=5,
+            target_amount=10,
             reward_coin=50,
             reward_exp=100,
-            npc_name="Librarian",
-            receiver_npc="Librarian",
-            next_quest_id="listening_lesson",
-            dialogue_offer=["Shh... Are you here to read?", "Please complete some reading exercises."],
-            dialogue_active=["Read carefully..."],
-            dialogue_ready=["Thank you for keeping the library active."]
-        ),
-        "listening_lesson": Quest(
-            id="listening_lesson",
-            title="Listening Comprehension",
-            description="Practice your listening skills.",
-            objective_text="Complete 5 Listening questions.",
-            target_building="Listening",
-            target_amount=5,
-            reward_coin=50,
-            reward_exp=100,
-            npc_name="Listening Instructor",
-            receiver_npc="Listening Instructor",
-            next_quest_id="office_quest",
-            dialogue_offer=["Let's tune your ears.", "Complete a listening test."],
-            dialogue_active=["Focus on the audio."],
-            dialogue_ready=["Your hearing is sharp!"]
-        ),
-        "office_quest": Quest(
-            id="office_quest",
-            title="Office Tasks",
-            description="Help the Office staff.",
-            objective_text="Complete Office questions.",
-            target_building="Office",
-            target_amount=5,
-            reward_coin=50,
-            reward_exp=100,
-            npc_name="Office Staff",
-            receiver_npc="Office Staff",
+            npc_name="Reading Professor",
+            receiver_npc="Reading Professor",
             next_quest_id="exam_quest",
-            dialogue_offer=["Welcome to the Office.", "Can you help sort some paperwork?"],
-            dialogue_active=["Keep sorting those documents."],
-            dialogue_ready=["Thank you for your help!"]
+            dialogue_offer=["Reading combines grammar and vocabulary.", "Complete today's reading practice."],
+            dialogue_active=["Complete today's reading practice inside."],
+            dialogue_ready=["Fantastic."]
         ),
         "exam_quest": Quest(
             id="exam_quest",
@@ -101,12 +106,12 @@ class QuestManager:
             target_amount=1,
             reward_coin=500,
             reward_exp=1000,
-            npc_name="Security Guard",
-            receiver_npc="Security Guard",
+            npc_name="Exam Supervisor",
+            receiver_npc="Exam Supervisor",
             next_quest_id=None,
-            dialogue_offer=["You've proven yourself.", "You may enter the Exam Center."],
-            dialogue_active=["Good luck on your exam."],
-            dialogue_ready=["Congratulations, you graduated!"]
+            dialogue_offer=["You have completed all required training.", "Take the TOEIC Final Exam.", "Good luck."],
+            dialogue_active=["The Exam is ready for you."],
+            dialogue_ready=["Congratulations on your score!"]
         )
     }
 
@@ -248,15 +253,15 @@ class QuestManager:
         
         result = False
         if building == "grammar":
-            result = self.profile.active_quest_id == "tutorial_grammar" or "tutorial_grammar" in self.profile.completed_quests
-        elif building == "reading":
-            result = "grammar_lesson" in self.profile.completed_quests
+            result = self.profile.active_quest_id in ["tutorial_grammar", "grammar_lesson"] or "grammar_lesson" in self.profile.completed_quests
+        elif building == "vocabulary":
+            result = self.profile.active_quest_id == "vocabulary_lesson" or "vocabulary_lesson" in self.profile.completed_quests
         elif building == "listening":
-            result = "reading_lesson" in self.profile.completed_quests
-        elif building == "office":
-            result = "listening_lesson" in self.profile.completed_quests
+            result = self.profile.active_quest_id == "listening_lesson" or "listening_lesson" in self.profile.completed_quests
+        elif building == "reading":
+            result = self.profile.active_quest_id == "reading_lesson" or "reading_lesson" in self.profile.completed_quests
         elif building == "exam" or building == "exam center":
-            result = "office_quest" in self.profile.completed_quests
+            result = self.profile.active_quest_id == "exam_quest" or "exam_quest" in self.profile.completed_quests
             
         return result
 
@@ -265,12 +270,12 @@ class QuestManager:
         building = building_name.lower()
         if building == "grammar":
             return "Talk to the Receptionist first."
-        if building == "reading":
-            return "Complete Grammar Quest first."
+        if building == "vocabulary":
+            return "Complete Grammar Practice first."
         if building == "listening":
-            return "Complete Reading Quest first."
-        if building == "office":
-            return "Complete Listening Quest first."
+            return "Complete Vocabulary Practice first."
+        if building == "reading":
+            return "Complete Listening Practice first."
         if building == "exam" or building == "exam center":
-            return "Complete all other quests first."
+            return "Complete all required training first."
         return "Not available."

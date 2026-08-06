@@ -62,67 +62,57 @@ class CampusScene(BaseScene):
         
         self.npcs = [
             NPC(
-                name="Professor", 
-                role="Grammar Instructor",
-                position=(-16, 0, 16), 
-                dialogue=[
-                    "Welcome to Grammar Hall.",
-                    "Come back when you are ready."
-                ], 
-                skin_color=skin,
-                shirt_color=color.rgb(139, 69, 19), # Brown jacket
-                pant_color=color.dark_gray
-            ),
-            
-            NPC(
-                name="Librarian", 
-                role="Reading Guide",
-                position=(-16, 0, 46), 
-                dialogue=[
-                    "Shh! The Reading building is quiet.",
-                    "Enjoy your books."
-                ], 
-                skin_color=skin,
-                shirt_color=color.cyan, 
-                pant_color=color.white
-            ),
-            
-            NPC(
                 name="Receptionist", 
                 role="Campus Guide",
                 position=(3, 0, 3), 
-                dialogue=[
-                    "Welcome to the TOEIC Campus!",
-                    "Explore the buildings to practice."
-                ], 
+                dialogue=["Welcome to the TOEIC Campus!"], 
                 skin_color=skin,
                 shirt_color=color.gray, 
                 pant_color=color.black
             ),
-            
             NPC(
-                name="Listening Instructor", 
-                role="Audio Guide",
+                name="Grammar Professor", 
+                role="Grammar Instructor",
+                position=(-16, 0, 16), 
+                dialogue=["Welcome to Grammar Hall."], 
+                skin_color=skin,
+                shirt_color=color.rgb(139, 69, 19), # Brown jacket
+                pant_color=color.dark_gray
+            ),
+            NPC(
+                name="Vocabulary Professor", 
+                role="Vocab Instructor",
+                position=(16, 0, 16), 
+                dialogue=["Welcome to Vocabulary Hall."], 
+                skin_color=skin,
+                shirt_color=color.blue, 
+                pant_color=color.dark_gray
+            ),
+            NPC(
+                name="Listening Professor", 
+                role="Audio Instructor",
                 position=(16, 0, 46), 
-                dialogue=[
-                    "Listen closely to the audio tracks.",
-                    "Focus is key here."
-                ], 
+                dialogue=["Welcome to Listening Hall."], 
                 skin_color=skin,
                 shirt_color=color.magenta, 
                 pant_color=color.blue
             ),
-            
             NPC(
-                name="Security Guard", 
+                name="Reading Professor", 
+                role="Reading Instructor",
+                position=(-16, 0, 46), 
+                dialogue=["Welcome to Reading Hall."], 
+                skin_color=skin,
+                shirt_color=color.orange, 
+                pant_color=color.dark_gray
+            ),
+            NPC(
+                name="Exam Supervisor", 
                 role="Exam Security",
                 position=(4, 0, 74), 
-                dialogue=[
-                    "The Exam building is restricted.",
-                    "Only prepared students may enter."
-                ], 
+                dialogue=["The Exam building is restricted."], 
                 skin_color=skin,
-                shirt_color=color.rgb(0, 0, 128), # Navy blue
+                shirt_color=color.red, 
                 pant_color=color.black
             )
         ]

@@ -39,6 +39,15 @@ class Building:
         
         # Store the explicit entrance position
         self.entrance_position = Vec3(*entrance_position)
+        
+        # Entrance Feedback: Add a subtle ground indicator
+        # Y is 0.01 above ground to prevent z-fighting
+        self.entrance_indicator = Entity(
+            model='plane',
+            color=color.rgba(255, 255, 255, 100), # Soft semi-transparent white
+            scale=(3, 1, 3), # A comfortable 3x3 standing pad
+            position=(self.entrance_position.x, 0.01, self.entrance_position.z)
+        )
 
     def set_lock_state(self, is_locked: bool) -> None:
         """
