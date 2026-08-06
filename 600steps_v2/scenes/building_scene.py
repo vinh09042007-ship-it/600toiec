@@ -119,7 +119,7 @@ class BuildingScene(BaseScene):
         # Handle Start Interaction
         is_enter_pressed = held_keys['enter']
         if is_enter_pressed and not self.was_enter_pressed:
-            print(f"Starting {self.building_name}...")
+            self.scene_manager.switch_scene("question", building_name=self.building_name)
         self.was_enter_pressed = is_enter_pressed
 
     def on_exit(self) -> None:

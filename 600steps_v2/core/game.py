@@ -13,6 +13,7 @@ from ursina import Ursina, Sky, Entity, color, time
 from core.scene_manager import SceneManager
 from scenes.campus_scene import CampusScene
 from scenes.building_scene import BuildingScene
+from scenes.question_scene import QuestionScene
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -46,9 +47,11 @@ class Game:
         # Initialize and register scenes
         campus = CampusScene(self.scene_manager)
         building = BuildingScene(self.scene_manager)
+        question = QuestionScene(self.scene_manager)
         
         self.scene_manager.register_scene("campus", campus)
         self.scene_manager.register_scene("building", building)
+        self.scene_manager.register_scene("question", question)
         
         # Start in Campus
         self.scene_manager.switch_scene("campus")
