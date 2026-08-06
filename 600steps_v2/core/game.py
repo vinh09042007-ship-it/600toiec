@@ -4,6 +4,7 @@ Core Game class managing the application lifecycle.
 from core.eventbus import EventBus
 from core.gamestate import GameState
 from player.controller import PlayerController
+from player.camera import PlayerCamera
 import utils.constants as const
 import config
 
@@ -41,6 +42,9 @@ class Game:
         # Initialize Player System
         self.player_controller = PlayerController(speed=const.PLAYER_SPEED)
         
+        # Initialize Camera System
+        self.player_camera = PlayerCamera(self.player_controller.player)
+        
         # Hook update loop
         self.updater = GameUpdater(self)
 
@@ -60,6 +64,7 @@ class Game:
         """Update game logic based on current state."""
         # Called every frame by GameUpdater
         self.player_controller.update(time.dt)
+        self.player_camera.update(time.dt)
 
     def _render(self) -> None:
         """Render the current state to the screen."""

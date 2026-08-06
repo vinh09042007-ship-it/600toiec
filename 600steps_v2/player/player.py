@@ -30,6 +30,10 @@ class Player(Entity):
         # Logical states
         self.state: str = "IDLE"
         self.is_moving: bool = False
+        
+        # Physics states
+        self.vertical_velocity: float = 0.0
+        self.is_grounded: bool = False
 
 
 

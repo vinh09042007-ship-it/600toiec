@@ -5,6 +5,7 @@ from typing import Tuple
 from .player import Player
 from .input import PlayerInput
 from .movement import PlayerMovement
+from .physics import PlayerPhysics
 
 class PlayerController:
     """
@@ -22,6 +23,7 @@ class PlayerController:
         self.player: Player = Player(speed=speed)
         self.input_system: PlayerInput = PlayerInput()
         self.movement_system: PlayerMovement = PlayerMovement(self.player)
+        self.physics_system: PlayerPhysics = PlayerPhysics(self.player)
 
     def update(self, delta_time: float) -> None:
         """
@@ -35,6 +37,9 @@ class PlayerController:
         
         # Step 2: Pass data to movement system for state modification
         self.movement_system.move(move_vector, delta_time)
+        
+        # Step 3: Apply physics
+        self.physics_system.update(delta_time)
 
     def get_player_position(self) -> Tuple[float, float, float]:
         """
