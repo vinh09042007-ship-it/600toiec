@@ -10,6 +10,8 @@ import config
 
 from ursina import Ursina, Sky, Entity, color, time
 
+from world.campus import Campus
+
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
     def __init__(self, game: 'Game') -> None:
@@ -35,9 +37,9 @@ class Game:
 
     def init_systems(self) -> None:
         """Initialize all subsystems and background services."""
-        # Simple environment for Phase 2.4
+        # Build the Campus World
         Sky()
-        Entity(model='plane', scale=(20, 1, 20), color=color.dark_gray, collider='box')
+        self.campus = Campus()
         
         # Initialize Player System
         self.player_controller = PlayerController(speed=const.PLAYER_SPEED)

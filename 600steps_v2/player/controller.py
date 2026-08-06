@@ -6,6 +6,7 @@ from .player import Player
 from .input import PlayerInput
 from .movement import PlayerMovement
 from .physics import PlayerPhysics
+from .collision import PlayerCollision
 
 class PlayerController:
     """
@@ -22,7 +23,8 @@ class PlayerController:
         """
         self.player: Player = Player(speed=speed)
         self.input_system: PlayerInput = PlayerInput()
-        self.movement_system: PlayerMovement = PlayerMovement(self.player)
+        self.collision_system: PlayerCollision = PlayerCollision(self.player)
+        self.movement_system: PlayerMovement = PlayerMovement(self.player, self.collision_system)
         self.physics_system: PlayerPhysics = PlayerPhysics(self.player)
 
     def update(self, delta_time: float) -> None:
