@@ -10,9 +10,9 @@ import config
 
 from ursina import Ursina, Sky, Entity, color, time
 
-from world.campus import Campus
-from world.collision import WorldCollision
-from world.interaction import InteractionManager
+from core.scene_manager import SceneManager
+from scenes.campus_scene import CampusScene
+from scenes.building_scene import BuildingScene
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -39,24 +39,19 @@ class Game:
 
     def init_systems(self) -> None:
         """Initialize all subsystems and background services."""
-        # Build the Campus World
-        Sky()
-        self.campus = Campus()
         
-        # Initialize World Collision
-        self.world_collision = WorldCollision(self.campus.obstacles)
+        # Initialize Scene Manager
+        self.scene_manager = SceneManager()
         
-        # Initialize Player System
-        self.player_controller = PlayerController(
-            speed=const.PLAYER_SPEED, 
-            world_collision=self.world_collision
-        )
+        # Initialize and register scenes
+        campus = CampusScene(self.scene_manager)
+        building = BuildingScene(self.scene_manager)
         
-        # Initialize Camera System
-        self.player_camera = PlayerCamera(self.player_controller.player)
+        self.scene_manager.register_scene("campus", campus)
+        self.scene_manager.register_scene("building", building)
         
-        # Initialize Interaction System
-        self.interaction_manager = InteractionManager(self.player_controller.player, self.campus)
+        # Start in Campus
+        self.scene_manager.switch_scene("campus")
         
         # Hook update loop
         self.updater = GameUpdater(self)
@@ -76,9 +71,7 @@ class Game:
     def _update(self) -> None:
         """Update game logic based on current state."""
         # Called every frame by GameUpdater
-        self.player_controller.update(time.dt)
-        self.player_camera.update(time.dt)
-        self.interaction_manager.update()
+        self.scene_manager.update(time.dt)
 
     def _render(self) -> None:
         """Render the current state to the screen."""

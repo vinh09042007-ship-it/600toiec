@@ -25,6 +25,7 @@ class InteractionManager:
         self.campus = campus
         self.nearest_building = None
         self.last_found = None
+        self.on_interact = None
         
         # UI Prompt Text
         self.prompt = Text(
@@ -109,6 +110,10 @@ class InteractionManager:
                 
                 # Hide the prompt immediately
                 self.prompt.enabled = False
+                
+                # Trigger callback
+                if self.on_interact:
+                    self.on_interact(self.nearest_building.name)
                 
                 # Clear nearest_building so interaction doesn't re-trigger
                 self.nearest_building = None
