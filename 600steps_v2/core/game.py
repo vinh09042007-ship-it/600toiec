@@ -12,6 +12,7 @@ from ursina import Ursina, Sky, Entity, color, time
 
 from world.campus import Campus
 from world.collision import WorldCollision
+from world.interaction import InteractionManager
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -54,6 +55,9 @@ class Game:
         # Initialize Camera System
         self.player_camera = PlayerCamera(self.player_controller.player)
         
+        # Initialize Interaction System
+        self.interaction_manager = InteractionManager(self.player_controller.player, self.campus)
+        
         # Hook update loop
         self.updater = GameUpdater(self)
 
@@ -74,6 +78,7 @@ class Game:
         # Called every frame by GameUpdater
         self.player_controller.update(time.dt)
         self.player_camera.update(time.dt)
+        self.interaction_manager.update()
 
     def _render(self) -> None:
         """Render the current state to the screen."""

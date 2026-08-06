@@ -3,6 +3,7 @@ Defines the Campus environment and layout.
 """
 from ursina import Entity, color
 import utils.constants as const
+from .building import Building
 
 class Campus:
     """
@@ -14,6 +15,7 @@ class Campus:
         """Initializes and builds the campus environment."""
         self.entities = []
         self.obstacles = []
+        self.buildings = []
         self._build_ground()
         self._build_roads()
         self._build_buildings()
@@ -63,51 +65,60 @@ class Campus:
         """Creates the learning area buildings with specific colors."""
         y_pos = const.BUILDING_SCALE[1] / 2  # Rest perfectly on the ground
         
-        # Vocabulary Building (Blue)
-        vocab = Entity(
-            model='cube',
+        # Vocabulary Building
+        vocab = Building(
+            name="Vocabulary",
+            category="vocabulary",
+            position=(const.POS_VOCABULARY[0], y_pos, const.POS_VOCABULARY[1]),
             scale=const.BUILDING_SCALE,
-            color=color.blue,
-            collider='box',
-            position=(const.POS_VOCABULARY[0], y_pos, const.POS_VOCABULARY[1])
+            building_color=color.blue,
+            entrance_position=(16.0, 0.0, 20.0)
         )
         
-        # Grammar Building (Yellow)
-        grammar = Entity(
-            model='cube',
+        # Grammar Building
+        grammar = Building(
+            name="Grammar",
+            category="grammar",
+            position=(const.POS_GRAMMAR[0], y_pos, const.POS_GRAMMAR[1]),
             scale=const.BUILDING_SCALE,
-            color=color.yellow,
-            collider='box',
-            position=(const.POS_GRAMMAR[0], y_pos, const.POS_GRAMMAR[1])
+            building_color=color.yellow,
+            entrance_position=(-16.0, 0.0, 20.0)
         )
         
-        # Reading Building (Orange)
-        reading = Entity(
-            model='cube',
+        # Reading Building
+        reading = Building(
+            name="Reading",
+            category="reading",
+            position=(const.POS_READING[0], y_pos, const.POS_READING[1]),
             scale=const.BUILDING_SCALE,
-            color=color.orange,
-            collider='box',
-            position=(const.POS_READING[0], y_pos, const.POS_READING[1])
+            building_color=color.orange,
+            entrance_position=(-16.0, 0.0, 50.0)
         )
         
-        # Listening Building (Magenta instead of purple)
-        listening = Entity(
-            model='cube',
+        # Listening Building
+        listening = Building(
+            name="Listening",
+            category="listening",
+            position=(const.POS_LISTENING[0], y_pos, const.POS_LISTENING[1]),
             scale=const.BUILDING_SCALE,
-            color=color.magenta,
-            collider='box',
-            position=(const.POS_LISTENING[0], y_pos, const.POS_LISTENING[1])
+            building_color=color.magenta,
+            entrance_position=(16.0, 0.0, 50.0)
         )
         
-        # Exam Building (Red, larger)
+        # Exam Building
         exam_y_pos = const.EXAM_BUILDING_SCALE[1] / 2
-        exam = Entity(
-            model='cube',
+        exam = Building(
+            name="Exam",
+            category="exam",
+            position=(const.POS_EXAM[0], exam_y_pos, const.POS_EXAM[1]),
             scale=const.EXAM_BUILDING_SCALE,
-            color=color.red,
-            collider='box',
-            position=(const.POS_EXAM[0], exam_y_pos, const.POS_EXAM[1])
+            building_color=color.red,
+            entrance_position=(0.0, 0.0, 74.0)
         )
         
-        self.entities.extend([vocab, grammar, reading, listening, exam])
-        self.obstacles.extend([vocab, grammar, reading, listening, exam])
+        self.buildings.extend([vocab, grammar, reading, listening, exam])
+        
+        # Add visual entities to tracking lists
+        for b in self.buildings:
+            self.entities.append(b.entity)
+            self.obstacles.append(b.entity)
