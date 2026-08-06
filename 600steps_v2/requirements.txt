@@ -1,0 +1,2 @@
+# Python >= 3.12 is required.
+# No third-party dependencies are required for Phase 1.
