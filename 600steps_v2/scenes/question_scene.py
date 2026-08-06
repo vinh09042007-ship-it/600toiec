@@ -219,10 +219,6 @@ class QuestionScene(BaseScene):
 
     def update_scene(self, delta_time: float) -> None:
         """Handle user input for answering and returning."""
-        # Handle Return
-        if held_keys['escape']:
-            self.scene_manager.switch_scene("building", building_name=self.building_name)
-            
         # Handle Answering
         if not self.has_answered:
             pressed_choice = None
@@ -236,6 +232,23 @@ class QuestionScene(BaseScene):
                     self._check_answer(pressed_choice)
                 
             self.was_key_pressed = pressed_choice is not None
+
+    def input(self, key: str) -> None:
+        """Handle discrete key presses for scene transitions."""
+        if not self.enabled:
+            return
+            
+        if key == 'escape':
+            if self.manager.is_finished():
+                if hasattr(self.scene_manager, 'transition_manager'):
+                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus")
+                else:
+                    self.scene_manager.switch_scene("campus")
+            else:
+                if hasattr(self.scene_manager, 'transition_manager'):
+                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "building", building_name=self.building_name)
+                else:
+                    self.scene_manager.switch_scene("building", building_name=self.building_name)
 
     def _check_answer(self, choice: int) -> None:
         """Check the selected answer and display feedback."""
@@ -284,6 +297,10 @@ class QuestionScene(BaseScene):
 
     def on_exit(self) -> None:
         """Cleanup."""
+        if self.rating_ui:
+            destroy(self.rating_ui)
+            self.rating_ui = None
+            
         # Reparent UI texts back to self
         self.score_text.parent = self
         self.correct_text.parent = self

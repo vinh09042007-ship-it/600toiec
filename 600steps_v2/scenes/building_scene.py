@@ -114,12 +114,18 @@ class BuildingScene(BaseScene):
         """Handle input inside the building."""
         # Handle Return
         if held_keys['escape']:
-            self.scene_manager.switch_scene("campus")
+            if hasattr(self.scene_manager, 'transition_manager'):
+                self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus")
+            else:
+                self.scene_manager.switch_scene("campus")
             
         # Handle Start Interaction
         is_enter_pressed = held_keys['enter']
         if is_enter_pressed and not self.was_enter_pressed:
-            self.scene_manager.switch_scene("question", building_name=self.building_name)
+            if hasattr(self.scene_manager, 'transition_manager'):
+                self.scene_manager.transition_manager.transition_to(self.scene_manager, "question", building_name=self.building_name)
+            else:
+                self.scene_manager.switch_scene("question", building_name=self.building_name)
         self.was_enter_pressed = is_enter_pressed
 
     def on_exit(self) -> None:

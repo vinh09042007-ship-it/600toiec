@@ -125,85 +125,82 @@ class QuestManager:
             return None
         return self.get_quest(self.profile.active_quest_id)
 
+    def _get_next_available_quest(self) -> Optional[Quest]:
+        """Returns the next quest in the chain based on completed quests."""
+        if not self.profile.completed_quests:
+            return self.get_quest("tutorial_grammar")
+        
+        last_completed_id = self.profile.completed_quests[-1]
+        last_completed = self.get_quest(last_completed_id)
+        
+        if last_completed and last_completed.next_quest_id:
+            return self.get_quest(last_completed.next_quest_id)
+            
+        return None
+
     def get_npc_quest_state(self, npc_name: str) -> str:
         """
         Determines the quest state for a specific NPC.
+        States are mutually exclusive.
         Returns: 'offer', 'active', 'ready', or 'none'
         """
         active_quest = self.get_active_quest()
         
         if active_quest:
+            # READY takes priority if they are the receiver and requirements are met
             if active_quest.receiver_npc == npc_name:
                 if self.profile.quest_progress >= active_quest.target_amount:
                     return 'ready'
-            if active_quest.npc_name == npc_name:
-                return 'active'
             
-        next_quest_id = "tutorial_grammar"
-        
-        if self.profile.completed_quests:
-            last_completed_id = self.profile.completed_quests[-1]
-            last_completed = self.get_quest(last_completed_id)
-            if last_completed and last_completed.next_quest_id:
-                next_quest_id = last_completed.next_quest_id
-            else:
-                next_quest_id = None
+            # ACTIVE if they are involved at all but not ready
+            if active_quest.receiver_npc == npc_name or active_quest.npc_name == npc_name:
+                return 'active'
                 
-        if next_quest_id and not active_quest:
-            next_quest = self.get_quest(next_quest_id)
-            if next_quest and next_quest.npc_name == npc_name:
-                return 'offer'
+            return 'none'
+            
+        # No active quest: Check for an offer
+        next_quest = self._get_next_available_quest()
+        if next_quest and next_quest.npc_name == npc_name:
+            return 'offer'
                 
         return 'none'
 
-    def interact_with_npc(self, npc_name: str) -> list[str]:
+    def interact_with_npc(self, npc_name: str) -> tuple[list[str], Optional[callable]]:
         """
         Called when talking to an NPC. Handles quest state transitions and returns dialogue.
+        Returns a tuple of (dialogue_lines, on_dialogue_end_callback).
         """
         state = self.get_npc_quest_state(npc_name)
         active_quest = self.get_active_quest()
         
-        if state == 'ready' and active_quest:
-            dialogue = list(active_quest.dialogue_ready)
-            self._complete_active_quest()
-            return dialogue
+        if state == 'ready':
+            return list(active_quest.dialogue_ready), self._complete_active_quest
             
         elif state == 'offer':
-            next_quest_id = "tutorial_grammar"
-            if self.profile.completed_quests:
-                last_completed = self.get_quest(self.profile.completed_quests[-1])
-                next_quest_id = last_completed.next_quest_id
-                
-            quest = self.get_quest(next_quest_id)
-            dialogue = list(quest.dialogue_offer)
-            self._accept_quest(quest.id)
-            return dialogue
+            next_quest = self._get_next_available_quest()
+            return list(next_quest.dialogue_offer), lambda q=next_quest.id: self._accept_quest(q)
             
-        elif state == 'active' and active_quest:
-            return list(active_quest.dialogue_active)
+        elif state == 'active':
+            return list(active_quest.dialogue_active), None
             
-        return ["I have nothing for you right now."]
+        return ["I have nothing for you right now."], None
 
     def _accept_quest(self, quest_id: str):
-        print(f"[Quest] Accepted {quest_id}")
         self.profile.active_quest_id = quest_id
         self.profile.quest_progress = 0
         
         quest = self.get_quest(quest_id)
-        if self.notification_ui:
-            self.notification_ui.show(f"New Quest: {quest.title}")
-            
         self.event_bus.emit(Events.QUEST_ACCEPTED, quest=quest)
         
-        # Check if building unlocked just by accepting
-        if quest_id == "tutorial_grammar":
-            print(f"[Building] Grammar unlocked")
+        # Save state
+        from core.save_manager import SaveManager
+        SaveManager.save_profile(self.profile)
+        
+        self.event_bus.emit(Events.QUEST_STATE_CHANGED)
 
     def _complete_active_quest(self):
         quest = self.get_active_quest()
         if not quest: return
-        
-        print(f"[Quest] Completed {quest.id}")
         
         self.profile.total_coins += quest.reward_coin
         self.profile.total_exp += quest.reward_exp
@@ -212,20 +209,19 @@ class QuestManager:
         self.profile.active_quest_id = None
         self.profile.quest_progress = 0
         
-        if self.notification_ui:
-            self.notification_ui.show(f"Quest Complete!\n+{quest.reward_coin} Coins\n+{quest.reward_exp} EXP")
-            
         self.event_bus.emit(Events.QUEST_COMPLETED, quest=quest)
         
-        # Print debugs for unlock based on what just completed
-        if quest.id == "grammar_lesson":
-            print("[Building] Reading unlocked")
-        elif quest.id == "reading_lesson":
-            print("[Building] Listening unlocked")
-        elif quest.id == "listening_lesson":
-            print("[Building] Office unlocked")
-        elif quest.id == "office_quest":
-            print("[Building] Exam Center unlocked")
+        # Auto-activate next quest in the storyline if one exists
+        if quest.next_quest_id:
+            next_quest = self.get_quest(quest.next_quest_id)
+            if next_quest:
+                self._accept_quest(next_quest.id)
+        else:
+            # Save state only if not auto-activating (auto-activate will save it)
+            from core.save_manager import SaveManager
+            SaveManager.save_profile(self.profile)
+            
+        self.event_bus.emit(Events.QUEST_STATE_CHANGED)
 
     def add_progress(self, amount: int, building_name: str):
         """Called by QuestionScene on correct answers."""
@@ -236,32 +232,33 @@ class QuestManager:
             if self.profile.quest_progress < quest.target_amount:
                 self.profile.quest_progress += amount
                 
+                self.event_bus.emit(Events.QUEST_PROGRESS, quest=quest, current=self.profile.quest_progress)
+                
+                from core.save_manager import SaveManager
+                SaveManager.save_profile(self.profile)
+                
                 if self.profile.quest_progress >= quest.target_amount:
-                    if self.notification_ui:
-                        self.notification_ui.show("Objective Complete! Return to NPC.")
+                    self.event_bus.emit(Events.QUEST_STATE_CHANGED)
 
     def is_building_unlocked(self, building_name: str) -> bool:
         """
-        Determines if the building is accessible based on storyline progression.
+        Determines if the building is accessible using explicit progression checks.
         """
         building = building_name.lower()
         
+        result = False
         if building == "grammar":
-            return bool(self.profile.active_quest_id) or len(self.profile.completed_quests) > 0
+            result = self.profile.active_quest_id == "tutorial_grammar" or "tutorial_grammar" in self.profile.completed_quests
+        elif building == "reading":
+            result = "grammar_lesson" in self.profile.completed_quests
+        elif building == "listening":
+            result = "reading_lesson" in self.profile.completed_quests
+        elif building == "office":
+            result = "listening_lesson" in self.profile.completed_quests
+        elif building == "exam" or building == "exam center":
+            result = "office_quest" in self.profile.completed_quests
             
-        if building == "reading":
-            return "grammar_lesson" in self.profile.completed_quests
-            
-        if building == "listening":
-            return "reading_lesson" in self.profile.completed_quests
-            
-        if building == "office":
-            return "listening_lesson" in self.profile.completed_quests
-            
-        if building == "exam" or building == "exam center":
-            return "office_quest" in self.profile.completed_quests
-            
-        return False
+        return result
 
     def get_building_lock_requirement(self, building_name: str) -> str:
         """Returns the user-friendly requirement message for a locked building."""

@@ -31,11 +31,14 @@ class QuestIcon(Entity):
             self.text_entity.enabled = True
         elif state == 'active':
             self.text_entity.text = "?"
-            self.text_entity.color = color.gray
+            self.text_entity.color = color.azure  # Blue
             self.text_entity.enabled = True
         elif state == 'ready':
-            self.text_entity.text = "?"
+            self.text_entity.text = "✔"
             self.text_entity.color = color.green
             self.text_entity.enabled = True
         else:
-            self.text_entity.enabled = False
+            # Gray ... for no quest
+            self.text_entity.text = "..."
+            self.text_entity.color = color.gray
+            self.text_entity.enabled = True

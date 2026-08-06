@@ -1,68 +1,78 @@
 from ursina import Entity, Text, color, held_keys
 from world.npc import NPC
 
-class DialogueManager:
+class DialogueManager(Entity):
     """
     Manages the rendering and flow of NPC dialogues.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.is_active = False
         self.current_npc = None
         self.dialogue_index = 0
         
         # UI Elements
+        # Background box at the bottom of the screen
         self.bg = Entity(
-            parent=None, # Will be attached to camera.ui
+            parent=self, 
             model='quad',
             color=color.rgba(0, 0, 0, 0.8),
-            scale=(1.2, 0.3),
+            scale=(1.4, 0.35),
             position=(0, -0.35),
             enabled=False
         )
         
+        # Parent text to self to avoid inheriting the non-uniform scale of the bg
         self.name_text = Text(
-            parent=self.bg,
+            parent=self,
             text="",
-            position=(-0.45, 0.4),
-            origin=(-0.5, 0.5),
-            scale=3,
-            color=color.gold
+            position=(-0.65, -0.22),
+            origin=(-0.5, 0.5), # Top-Left
+            scale=4,
+            color=color.gold,
+            enabled=False
         )
         
         self.dialogue_text = Text(
-            parent=self.bg,
-            text="",
-            position=(-0.45, 0.1),
-            origin=(-0.5, 0.5),
-            scale=2,
-            color=color.white
+            parent=self,
+            text=" ",
+            position=(-0.65, -0.28),
+            origin=(-0.5, 0.5), # Top-Left
+            scale=3.5,
+            color=color.white,
+            enabled=False
         )
+        self.dialogue_text.wordwrap = 45
         
         self.instruction_text = Text(
-            parent=self.bg,
+            parent=self,
             text="[SPACE] Next   [ESC] Close",
-            position=(0.45, -0.3),
-            origin=(0.5, -0.5),
-            scale=1.5,
-            color=color.light_gray
+            position=(0.65, -0.48),
+            origin=(0.5, -0.5), # Bottom-Right
+            scale=2,
+            color=color.light_gray,
+            enabled=False
         )
         
-        self.was_space_pressed = False
         self.on_dialogue_end = None
 
     def attach_to_camera(self, camera_ui):
         """Attaches the dialogue UI to the camera's UI layer."""
-        self.bg.parent = camera_ui
+        self.parent = camera_ui
+        self.bg.parent = self
 
     def start_dialogue(self, npc: NPC, on_end_callback=None):
         """Starts a dialogue sequence with the given NPC."""
         self.current_npc = npc
         self.dialogue_index = 0
         self.is_active = True
-        self.was_space_pressed = True # Prevent accidental double skip if SPACE was held
         self.on_dialogue_end = on_end_callback
         
         self.bg.enabled = True
+        self.name_text.enabled = True
+        self.dialogue_text.enabled = True
+        self.instruction_text.enabled = True
+        
         self.name_text.text = npc.npc_name
         self._update_text()
 
@@ -75,23 +85,33 @@ class DialogueManager:
 
     def end_dialogue(self):
         """Closes the dialogue UI."""
+        if not self.is_active:
+            return
+            
+        print("[Dialogue End] Finished")
         self.is_active = False
         self.current_npc = None
         self.bg.enabled = False
+        self.name_text.enabled = False
+        self.dialogue_text.enabled = False
+        self.instruction_text.enabled = False
+        
         if self.on_dialogue_end:
             self.on_dialogue_end()
 
-    def update(self):
-        """Handles dialogue progression inputs. Called every frame when active."""
+    def input(self, key):
+        """Handles discrete inputs for dialogue."""
         if not self.is_active:
             return
-
-        is_space_pressed = held_keys['space']
-        if is_space_pressed and not self.was_space_pressed:
+            
+        if key == 'space':
+            print("[Dialogue] Next line")
             self.dialogue_index += 1
             self._update_text()
             
-        self.was_space_pressed = is_space_pressed
-
-        if held_keys['escape']:
+        elif key == 'escape':
             self.end_dialogue()
+
+    def update(self):
+        # Kept for compatibility if called manually
+        pass

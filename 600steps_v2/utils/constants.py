@@ -8,7 +8,7 @@ ASSET_FOLDER_NAME: str = "assets"
 SAVE_FOLDER_NAME: str = "saves"
 
 # Physics / Entity constants (Placeholders)
-PLAYER_SPEED: float = 5.0
+PLAYER_SPEED: float = 6.0
 PLAYER_GRAVITY: float = -20.0
 PLAYER_TERMINAL_VELOCITY: float = -50.0
 GROUND_HEIGHT: float = 1.0

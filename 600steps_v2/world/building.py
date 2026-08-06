@@ -25,6 +25,8 @@ class Building:
         """
         self.name = name
         self.category = category
+        self.original_color = building_color
+        self.is_locked = False
         
         # Create the actual physical representation in the world
         self.entity = Entity(
@@ -37,3 +39,17 @@ class Building:
         
         # Store the explicit entrance position
         self.entrance_position = Vec3(*entrance_position)
+
+    def set_lock_state(self, is_locked: bool) -> None:
+        """
+        Updates the building's visual state based on lock status.
+        Locked buildings are darkened.
+        """
+        if self.is_locked == is_locked:
+            return
+            
+        self.is_locked = is_locked
+        if is_locked:
+            self.entity.color = color.dark_gray
+        else:
+            self.entity.color = self.original_color

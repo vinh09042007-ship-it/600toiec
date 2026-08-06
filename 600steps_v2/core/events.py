@@ -16,6 +16,8 @@ class Events(Enum):
     
     QUEST_ACCEPTED = auto()
     QUEST_COMPLETED = auto()
+    QUEST_PROGRESS = auto()
+    QUEST_STATE_CHANGED = auto()
     BUILDING_UNLOCKED = auto()
     
     QUIZ_OPEN = auto()

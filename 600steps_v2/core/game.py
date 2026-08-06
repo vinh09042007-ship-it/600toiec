@@ -19,6 +19,9 @@ from core.save_manager import SaveManager
 from core.quest_manager import QuestManager
 from ui.notification import NotificationUI
 from ui.quest_log import QuestLogUI
+from ui.hud import QuestHUD
+from ui.celebration import QuestCelebration
+from ui.transition import TransitionManager
 from ursina import camera
 
 class GameUpdater(Entity):
@@ -56,8 +59,14 @@ class Game:
         self.quest_manager.notification_ui = self.notification_ui
         self.quest_log_ui = QuestLogUI(camera.ui, self.quest_manager)
         
+        # New UIs
+        self.hud_ui = QuestHUD(camera.ui, self.event_bus, self.quest_manager)
+        self.celebration_ui = QuestCelebration(camera.ui, self.event_bus)
+        self.transition_manager = TransitionManager(camera.ui)
+        
         # Initialize Scene Manager
         self.scene_manager = SceneManager(player_profile=self.player_profile)
+        self.scene_manager.transition_manager = self.transition_manager
         self.scene_manager.quest_manager = self.quest_manager # Inject into SceneManager
         
         # Initialize and register scenes

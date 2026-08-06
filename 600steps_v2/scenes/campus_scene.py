@@ -10,6 +10,7 @@ from player.camera import PlayerCamera
 from world.interaction import InteractionManager
 from world.npc import NPC
 from ui.dialogue_manager import DialogueManager
+from core.events import Events
 import utils.constants as const
 
 class CampusScene(BaseScene):
@@ -50,6 +51,9 @@ class CampusScene(BaseScene):
         self.dialogue_manager.attach_to_camera(camera.ui)
         
         self._spawn_npcs()
+        
+        # Subscribe to world state changes
+        self.scene_manager.quest_manager.event_bus.subscribe(Events.QUEST_STATE_CHANGED, self._refresh_world_state)
 
     def _spawn_npcs(self) -> None:
         """Instantiates NPCs in the campus."""
@@ -133,32 +137,62 @@ class CampusScene(BaseScene):
         quest_manager = self.scene_manager.quest_manager
         
         if quest_manager.is_building_unlocked(building_name):
-            self.scene_manager.switch_scene("building", building_name=building_name)
+            if hasattr(self.scene_manager, 'transition_manager'):
+                self.scene_manager.transition_manager.transition_to(self.scene_manager, "building", building_name=building_name)
+            else:
+                self.scene_manager.switch_scene("building", building_name=building_name)
         else:
             requirement = quest_manager.get_building_lock_requirement(building_name)
             quest_manager.notification_ui.show(f"Building Locked\n{requirement}")
 
     def _on_npc_talk(self, npc: NPC) -> None:
         """Callback triggered when the player talks to an NPC."""
+        print(f"[Interaction] Talking to {npc.npc_name}")
         quest_manager = self.scene_manager.quest_manager
         
-        # Get dynamic dialogue from quest manager
-        dialogue = quest_manager.interact_with_npc(npc.npc_name)
+        # Get dynamic dialogue and callback from quest manager
+        dialogue, callback = quest_manager.interact_with_npc(npc.npc_name)
         npc.dialogue = dialogue # Update the data holder
         
-        self.dialogue_manager.start_dialogue(npc)
+        print(f"[NPC] Returning callback: {callback}")
+        
+        self.dialogue_manager.start_dialogue(
+            npc,
+            on_end_callback=lambda n=npc, c=callback: self.after_dialogue(n, c)
+        )
+
+    def after_dialogue(self, npc: NPC, callback) -> None:
+        """Executes quest and state updates after dialogue finishes."""
+        print(f"[Campus Callback] after_dialogue triggered for {npc.npc_name}")
+        print(f"[Campus Callback] executing callback: {callback}")
+        
+        if callback:
+            callback()
+            print("[NPC] Dialogue updated")
+            
+        # Refresh interaction prompt dynamically if player is near something
+        self.interaction_manager._find_nearest_interactable()
+        self.interaction_manager._update_prompt()
+        print("[Interaction] refreshed")
 
     def on_enter(self, **kwargs) -> None:
         """Called when entering the campus."""
-        pass
+        self._refresh_world_state()
         
-    def update_scene(self, delta_time: float) -> None:
-        """Update systems every frame."""
-        # Update quest icons
+    def _refresh_world_state(self, *args, **kwargs) -> None:
+        """Updates all NPCs and Buildings based on the current quest state."""
         quest_manager = self.scene_manager.quest_manager
+        
         for npc in self.npcs:
             state = quest_manager.get_npc_quest_state(npc.npc_name)
             npc.quest_icon.update_state(state)
+            
+        for building in self.campus.buildings:
+            is_unlocked = quest_manager.is_building_unlocked(building.name)
+            building.set_lock_state(not is_unlocked)
+        
+    def update_scene(self, delta_time: float) -> None:
+        """Update systems every frame."""
             
         # If dialogue is active, freeze player and interaction
         if self.dialogue_manager.is_active:

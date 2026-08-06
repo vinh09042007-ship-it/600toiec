@@ -1,16 +1,16 @@
 {
     "player_name": "Student",
-    "total_score": 30,
-    "total_exp": 60,
-    "total_coins": 30,
-    "current_level": 1,
-    "total_correct_answers": 3,
-    "total_wrong_answers": 0,
-    "total_practices": 1,
+    "total_score": 80,
+    "total_exp": 200,
+    "total_coins": 100,
+    "current_level": 3,
+    "total_correct_answers": 8,
+    "total_wrong_answers": 1,
+    "total_practices": 3,
     "highest_score": 30,
     "building_stats": {
         "Grammar": {
-            "completed": 1
+            "completed": 3
         },
         "Vocabulary": {
             "completed": 0
@@ -25,7 +25,9 @@
             "completed": 0
         }
     },
-    "active_quest_id": null,
-    "quest_progress": 0,
-    "completed_quests": []
+    "active_quest_id": "grammar_lesson",
+    "quest_progress": 5,
+    "completed_quests": [
+        "tutorial_grammar"
+    ]
 }
