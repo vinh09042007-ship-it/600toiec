@@ -1,0 +1,32 @@
+[
+    {
+        "question": "Mr. Smith ____ his team to finish the report by Friday.",
+        "choices": [
+            "ask",
+            "asked",
+            "asking",
+            "was asked"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "The new software is much more ____ than the previous version.",
+        "choices": [
+            "efficiency",
+            "efficiently",
+            "efficient",
+            "efficiencies"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "Please ensure all doors are locked ____ leaving the building.",
+        "choices": [
+            "before",
+            "after",
+            "during",
+            "while"
+        ],
+        "answer": 0
+    }
+]

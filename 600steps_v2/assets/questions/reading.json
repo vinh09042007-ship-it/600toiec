@@ -1,0 +1,22 @@
+[
+    {
+        "question": "What is the main topic of the passage?",
+        "choices": [
+            "Company policies",
+            "New software update",
+            "Employee vacation time",
+            "Cafeteria menu"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "According to the article, why did profits increase?",
+        "choices": [
+            "Lower taxes",
+            "Higher sales in Asia",
+            "Reduced manufacturing costs",
+            "New product launch"
+        ],
+        "answer": 2
+    }
+]

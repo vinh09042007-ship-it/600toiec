@@ -1,0 +1,28 @@
+{
+    "player_name": "Student",
+    "total_score": 30,
+    "total_exp": 60,
+    "total_coins": 30,
+    "current_level": 1,
+    "total_correct_answers": 3,
+    "total_wrong_answers": 0,
+    "total_practices": 1,
+    "highest_score": 30,
+    "building_stats": {
+        "Grammar": {
+            "completed": 1
+        },
+        "Vocabulary": {
+            "completed": 0
+        },
+        "Listening": {
+            "completed": 0
+        },
+        "Reading": {
+            "completed": 0
+        },
+        "Exam": {
+            "completed": 0
+        }
+    }
+}

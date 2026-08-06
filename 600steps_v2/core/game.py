@@ -14,6 +14,8 @@ from core.scene_manager import SceneManager
 from scenes.campus_scene import CampusScene
 from scenes.building_scene import BuildingScene
 from scenes.question_scene import QuestionScene
+from player.profile import PlayerProfile
+from core.save_manager import SaveManager
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -41,8 +43,11 @@ class Game:
     def init_systems(self) -> None:
         """Initialize all subsystems and background services."""
         
+        # Initialize player profile via SaveManager
+        self.player_profile = SaveManager.load_profile()
+        
         # Initialize Scene Manager
-        self.scene_manager = SceneManager()
+        self.scene_manager = SceneManager(player_profile=self.player_profile)
         
         # Initialize and register scenes
         campus = CampusScene(self.scene_manager)

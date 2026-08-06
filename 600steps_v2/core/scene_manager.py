@@ -8,10 +8,11 @@ class SceneManager:
     Handles registering, switching, and updating game scenes.
     """
     
-    def __init__(self) -> None:
+    def __init__(self, player_profile) -> None:
         """Initialize the SceneManager."""
         self.scenes: Dict[str, Any] = {}
         self.active_scene = None
+        self.player_profile = player_profile
 
     def register_scene(self, name: str, scene) -> None:
         """
