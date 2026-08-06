@@ -11,6 +11,7 @@ import config
 from ursina import Ursina, Sky, Entity, color, time
 
 from world.campus import Campus
+from world.collision import WorldCollision
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -41,8 +42,14 @@ class Game:
         Sky()
         self.campus = Campus()
         
+        # Initialize World Collision
+        self.world_collision = WorldCollision(self.campus.obstacles)
+        
         # Initialize Player System
-        self.player_controller = PlayerController(speed=const.PLAYER_SPEED)
+        self.player_controller = PlayerController(
+            speed=const.PLAYER_SPEED, 
+            world_collision=self.world_collision
+        )
         
         # Initialize Camera System
         self.player_camera = PlayerCamera(self.player_controller.player)

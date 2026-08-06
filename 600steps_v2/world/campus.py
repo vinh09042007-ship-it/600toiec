@@ -13,6 +13,7 @@ class Campus:
     def __init__(self) -> None:
         """Initializes and builds the campus environment."""
         self.entities = []
+        self.obstacles = []
         self._build_ground()
         self._build_roads()
         self._build_buildings()
@@ -109,3 +110,4 @@ class Campus:
         )
         
         self.entities.extend([vocab, grammar, reading, listening, exam])
+        self.obstacles.extend([vocab, grammar, reading, listening, exam])

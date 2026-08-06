@@ -13,6 +13,7 @@ PLAYER_GRAVITY: float = -20.0
 PLAYER_TERMINAL_VELOCITY: float = -50.0
 GROUND_HEIGHT: float = 1.0
 INTERACTION_DISTANCE: float = 2.0
+PLAYER_RADIUS: float = 0.5
 
 # Rendering constants
 DEFAULT_LAYER: int = 0
@@ -24,6 +25,7 @@ CAMERA_LERP_SPEED: float = 5.0
 
 # World / Campus constants
 GROUND_SCALE: tuple[float, float, float] = (200.0, 1.0, 200.0)
+WORLD_BORDER: float = 95.0
 ROAD_WIDTH: float = 4.0
 BUILDING_SCALE: tuple[float, float, float] = (8.0, 6.0, 8.0)
 EXAM_BUILDING_SCALE: tuple[float, float, float] = (12.0, 10.0, 12.0)

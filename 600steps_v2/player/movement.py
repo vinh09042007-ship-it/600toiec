@@ -1,11 +1,8 @@
 """
 Handles movement calculation and application for the Player entity.
 """
-from typing import Tuple, TYPE_CHECKING
+from typing import Tuple
 from .player import Player
-
-if TYPE_CHECKING:
-    from .collision import PlayerCollision
 
 class PlayerMovement:
     """
@@ -14,24 +11,25 @@ class PlayerMovement:
     Operates entirely decoupled from input hardware reading or world physics.
     """
     
-    def __init__(self, player: Player, collision_system: 'PlayerCollision') -> None:
+    def __init__(self, player: Player) -> None:
         """
         Initializes the movement system.
         
         Args:
             player (Player): The player entity to modify.
-            collision_system (PlayerCollision): The collision system to check path clearance.
         """
         self.player = player
-        self.collision_system = collision_system
 
-    def move(self, move_vector: Tuple[float, float, float], delta_time: float) -> None:
+    def calculate_desired_position(self, move_vector: Tuple[float, float, float], delta_time: float) -> Tuple[float, float, float]:
         """
-        Applies the movement vector to the player's position.
+        Calculates the new position based on input. Does NOT modify the player's position.
         
         Args:
             move_vector (Tuple[float, float, float]): The normalized direction vector (x, y, z).
             delta_time (float): The time elapsed since the last frame.
+            
+        Returns:
+            Tuple[float, float, float]: The desired new (x, y, z) position.
         """
         x, y, z = move_vector
         
@@ -47,26 +45,16 @@ class PlayerMovement:
             # Determine how far the player wants to move
             distance = self.player.speed * delta_time
             
-            # Ask the CollisionSystem if the path is clear
-            if self.collision_system.can_move((x, y, z), distance):
-                # Calculate displacement based on speed and delta_time
-                displacement_x = x * distance
-                displacement_y = y * distance
-                displacement_z = z * distance
-                
-                # Retrieve current position
-                current_x, current_y, current_z = self.player.position
-                
-                # Apply displacement to get the new position
-                new_x = current_x + displacement_x
-                new_y = current_y + displacement_y
-                new_z = current_z + displacement_z
-                self.player.position = (new_x, new_y, new_z)
-                
-                # Update logical state
-                self.player.state = "RUNNING"
-            else:
-                # Path is blocked
-                self.player.state = "IDLE"
-        else:
-            self.player.state = "IDLE"
+            # Calculate displacement
+            displacement_x = x * distance
+            displacement_y = y * distance
+            displacement_z = z * distance
+            
+            # Retrieve current position
+            current_x, current_y, current_z = self.player.position
+            
+            # Return desired position
+            return (current_x + displacement_x, current_y + displacement_y, current_z + displacement_z)
+            
+        # If not moving, desired position is current position
+        return self.player.position
