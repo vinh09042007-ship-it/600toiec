@@ -62,3 +62,12 @@ class Building:
             self.entity.color = color.dark_gray
         else:
             self.entity.color = self.original_color
+
+    def set_active_highlight(self, is_active: bool) -> None:
+        """
+        Highlights the building entrance if it is the active quest target.
+        """
+        if is_active:
+            self.entrance_indicator.color = color.rgba(255, 215, 0, 200) # Brighter yellow/gold
+        else:
+            self.entrance_indicator.color = color.rgba(255, 255, 255, 100) # Default soft white

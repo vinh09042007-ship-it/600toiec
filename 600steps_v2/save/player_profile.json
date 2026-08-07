@@ -1,19 +1,19 @@
 {
     "player_name": "Student",
-    "total_score": 60,
-    "total_exp": 1520,
-    "total_coins": 760,
-    "current_level": 16,
-    "total_correct_answers": 6,
-    "total_wrong_answers": 4,
-    "total_practices": 2,
+    "total_score": 200,
+    "total_exp": 1800,
+    "total_coins": 900,
+    "current_level": 19,
+    "total_correct_answers": 20,
+    "total_wrong_answers": 13,
+    "total_practices": 8,
     "highest_score": 40,
     "building_stats": {
         "Grammar": {
-            "completed": 0
+            "completed": 4
         },
         "Vocabulary": {
-            "completed": 0
+            "completed": 2
         },
         "Listening": {
             "completed": 0

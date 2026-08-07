@@ -8,3 +8,4 @@ WINDOW_HEIGHT: int = 720
 FULLSCREEN: bool = False
 TARGET_FPS: int = 60
 VERSION: str = "0.1.0"
+DEBUG_MODE: bool = True

@@ -172,6 +172,7 @@ class CampusScene(BaseScene):
     def _refresh_world_state(self, *args, **kwargs) -> None:
         """Updates all NPCs and Buildings based on the current quest state."""
         quest_manager = self.scene_manager.quest_manager
+        active_quest = quest_manager.get_active_quest()
         
         for npc in self.npcs:
             state = quest_manager.get_npc_quest_state(npc.npc_name)
@@ -180,6 +181,10 @@ class CampusScene(BaseScene):
         for building in self.campus.buildings:
             is_unlocked = quest_manager.is_building_unlocked(building.name)
             building.set_lock_state(not is_unlocked)
+            
+            # Highlight if it's the active building
+            is_active = active_quest is not None and active_quest.target_building == building.name
+            building.set_active_highlight(is_active)
         
     def update_scene(self, delta_time: float) -> None:
         """Update systems every frame."""

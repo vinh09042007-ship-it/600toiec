@@ -57,7 +57,12 @@ class QuestionLoader:
             print(f"Database size: {total_db_size}")
             
             # Determine limit
-            actual_limit = limit if limit is not None else QuestionLoader.DEFAULT_TEST_SIZE
+            if limit is not None:
+                actual_limit = limit
+            elif category == "vocabulary":
+                actual_limit = 5
+            else:
+                actual_limit = QuestionLoader.DEFAULT_TEST_SIZE
             
             # Random selection
             if total_db_size <= actual_limit:

@@ -46,9 +46,12 @@ class SceneManager:
             self.active_scene.disable()
             
         # Enter the new scene
+        print(f"[TRACE] SceneManager: Enabling scene {name}")
         self.active_scene = self.scenes[name]
         self.active_scene.enable()
+        print(f"[TRACE] SceneManager: Calling on_enter for {name}")
         self.active_scene.on_enter(**kwargs)
+        print(f"[TRACE] SceneManager: on_enter returned for {name}")
 
     def update(self, delta_time: float) -> None:
         """

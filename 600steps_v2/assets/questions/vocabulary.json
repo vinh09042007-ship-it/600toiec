@@ -1,0 +1,322 @@
+[
+    {
+        "question": "The new photocopier is out of ____, so please use the one on the second floor.",
+        "choices": [
+            "paper",
+            "stock",
+            "order",
+            "date"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "All employees must wear their identification ____ at all times while in the building.",
+        "choices": [
+            "labels",
+            "badges",
+            "signs",
+            "tickets"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "Ms. Lee will ____ the orientation session for the new employees next Monday.",
+        "choices": [
+            "perform",
+            "behave",
+            "comply",
+            "conduct"
+        ],
+        "answer": 3
+    },
+    {
+        "question": "The weekly staff meeting has been ____ until Thursday due to the manager's absence.",
+        "choices": [
+            "cancelled",
+            "promoted",
+            "postponed",
+            "prevented"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "Please review the attached ____ before our meeting tomorrow morning.",
+        "choices": [
+            "agenda",
+            "calendar",
+            "journal",
+            "schedule"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "The board of directors reached a ____ regarding the new marketing strategy.",
+        "choices": [
+            "conflict",
+            "consensus",
+            "contract",
+            "consequence"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "Our company plans to ____ its operations into the European market next year.",
+        "choices": [
+            "shrink",
+            "decrease",
+            "expand",
+            "extend"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "We need to find a more reliable ____ for our raw materials.",
+        "choices": [
+            "consumer",
+            "applicant",
+            "tenant",
+            "supplier"
+        ],
+        "answer": 3
+    },
+    {
+        "question": "The CEO announced a new ____ with a leading tech firm to develop the app.",
+        "choices": [
+            "partnership",
+            "membership",
+            "scholarship",
+            "ownership"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "Passengers must present their boarding ____ at the gate before entering the aircraft.",
+        "choices": [
+            "passes",
+            "passports",
+            "receipts",
+            "permits"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "The flight to London was delayed because of severe weather ____.",
+        "choices": [
+            "situations",
+            "positions",
+            "conditions",
+            "environments"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "Please make sure that your luggage does not exceed the weight ____.",
+        "choices": [
+            "amount",
+            "limit",
+            "number",
+            "level"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "The hotel requires a credit card to ____ the room reservation.",
+        "choices": [
+            "cancel",
+            "deny",
+            "refuse",
+            "confirm"
+        ],
+        "answer": 3
+    },
+    {
+        "question": "Guests are requested to leave their room keys at the front ____ when checking out.",
+        "choices": [
+            "door",
+            "lobby",
+            "desk",
+            "table"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "Complimentary breakfast is served in the dining room from 6:30 AM to 9:30 AM ____.",
+        "choices": [
+            "rarely",
+            "hardly",
+            "recently",
+            "daily"
+        ],
+        "answer": 3
+    },
+    {
+        "question": "The store offers a full ____ if the item is returned within 30 days of purchase.",
+        "choices": [
+            "refund",
+            "discount",
+            "charge",
+            "receipt"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "Customers with a loyalty card are eligible for a 10% ____ on all purchases.",
+        "choices": [
+            "interest",
+            "tax",
+            "discount",
+            "fee"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "This jacket is currently out of ____, but we expect a new shipment next week.",
+        "choices": [
+            "style",
+            "stock",
+            "order",
+            "place"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "The marketing team is launching a new ____ to promote the summer clothing line.",
+        "choices": [
+            "company",
+            "competition",
+            "campaign",
+            "collection"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "Our primary target ____ consists of young professionals aged 25 to 35.",
+        "choices": [
+            "spectator",
+            "audience",
+            "viewer",
+            "bystander"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "The advertisement was highly effective in increasing brand ____ among consumers.",
+        "choices": [
+            "carefulness",
+            "alertness",
+            "attention",
+            "awareness"
+        ],
+        "answer": 3
+    },
+    {
+        "question": "All travel expenses must be approved by the department ____ before reimbursement.",
+        "choices": [
+            "manager",
+            "assistant",
+            "client",
+            "investor"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "The company reported a significant increase in quarterly ____ this year.",
+        "choices": [
+            "debts",
+            "profits",
+            "losses",
+            "taxes"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "Please review the financial ____ carefully before signing the contract.",
+        "choices": [
+            "conversations",
+            "statements",
+            "speeches",
+            "sentences"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "We apologize for the ____ caused by the delay in shipping your order.",
+        "choices": [
+            "convenience",
+            "advantage",
+            "inconvenience",
+            "benefit"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "If you are not completely satisfied, our customer service representatives will ____ you.",
+        "choices": [
+            "assist",
+            "resist",
+            "insist",
+            "persist"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "A technician will be dispatched to resolve your ____ as soon as possible.",
+        "choices": [
+            "result",
+            "success",
+            "issue",
+            "achievement"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "Please find the requested documents ____ to this email.",
+        "choices": [
+            "enclosed",
+            "attached",
+            "included",
+            "inserted"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "I look forward to receiving a prompt ____ to my inquiry.",
+        "choices": [
+            "question",
+            "demand",
+            "request",
+            "reply"
+        ],
+        "answer": 3
+    },
+    {
+        "question": "Could you please ____ the details of the meeting in an email?",
+        "choices": [
+            "confuse",
+            "complicate",
+            "clarify",
+            "conceal"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "The company offers excellent benefits to attract highly qualified ____.",
+        "choices": [
+            "candidates",
+            "interviewers",
+            "employers",
+            "managers"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "All new staff must complete a mandatory training ____ during their first week.",
+        "choices": [
+            "period",
+            "program",
+            "practice",
+            "procedure"
+        ],
+        "answer": 1
+    }
+]

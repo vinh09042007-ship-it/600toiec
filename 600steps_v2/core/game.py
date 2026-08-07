@@ -23,6 +23,12 @@ from ui.hud import QuestHUD
 from ui.celebration import QuestCelebration
 from ui.transition import TransitionManager
 from ursina import camera
+import config
+
+try:
+    from debug.debug_menu import DebugMenu
+except ImportError:
+    DebugMenu = None
 
 class GameUpdater(Entity):
     """Hidden entity used solely to hook into Ursina's update loop."""
@@ -69,7 +75,6 @@ class Game:
         self.scene_manager.transition_manager = self.transition_manager
         self.scene_manager.quest_manager = self.quest_manager # Inject into SceneManager
         
-        # Initialize and register scenes
         campus = CampusScene(self.scene_manager)
         building = BuildingScene(self.scene_manager)
         question = QuestionScene(self.scene_manager)
@@ -80,6 +85,10 @@ class Game:
         
         # Start in Campus
         self.scene_manager.switch_scene("campus")
+        
+        # Initialize Debug Menu
+        if getattr(config, 'DEBUG_MODE', False) and DebugMenu:
+            self.debug_menu = DebugMenu(self)
         
         # Hook update loop
         self.updater = GameUpdater(self)

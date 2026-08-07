@@ -12,8 +12,11 @@ class BaseScene(Entity):
     
     def __init__(self, **kwargs) -> None:
         """Initialize the scene as an Ursina Entity."""
+        print(f"[TRACE] BaseScene: __init__ started for {self.__class__.__name__}")
         super().__init__(**kwargs)
+        print(f"[TRACE] BaseScene: Calling setup for {self.__class__.__name__}")
         self.setup()
+        print(f"[TRACE] BaseScene: __init__ finished for {self.__class__.__name__}")
         
     def setup(self) -> None:
         """

@@ -25,20 +25,9 @@ class QuestIcon(Entity):
         Args:
             state: 'offer', 'active', 'ready', or 'none'
         """
-        if state == 'offer':
+        if state == 'offer' or state == 'ready':
             self.text_entity.text = "!"
             self.text_entity.color = color.yellow
             self.text_entity.enabled = True
-        elif state == 'active':
-            self.text_entity.text = "?"
-            self.text_entity.color = color.azure  # Blue
-            self.text_entity.enabled = True
-        elif state == 'ready':
-            self.text_entity.text = "✔"
-            self.text_entity.color = color.green
-            self.text_entity.enabled = True
         else:
-            # Gray ... for no quest
-            self.text_entity.text = "..."
-            self.text_entity.color = color.gray
-            self.text_entity.enabled = True
+            self.text_entity.enabled = False

@@ -9,6 +9,8 @@ from core.question_loader import QuestionLoader
 from core.mini_game_manager import MiniGameManager
 from ui.combo_popup import ComboPopup
 from ui.rating_popup import RatingPopup
+from ui.lesson_complete_popup import LessonCompletePopup
+from ursina import Sequence, Wait, Func
 
 class QuestionScene(BaseScene):
     """
@@ -270,15 +272,77 @@ class QuestionScene(BaseScene):
         
         is_exam = self.building_name.lower() == "exam"
         
-        self.rating_ui = RatingPopup.show(
-            camera_ui=camera.ui,
-            rating=rating,
-            score=self.score_manager.current_score,
-            coins=self.score_manager.earned_coins,
-            exp=self.score_manager.earned_exp,
-            is_exam=is_exam,
-            correct_answers=self.score_manager.correct_answers
-        )
+        if is_exam:
+            displayed_score = self.score_manager.current_score * 6
+            if displayed_score >= 600:
+                print("[TRACE] QuestionScene: Exam passed, score > 600")
+                # Trigger cinematic celebration
+                
+                # Auto-complete the quest so HUD clears and progression saves
+                if hasattr(self.scene_manager, 'quest_manager'):
+                    print("[TRACE] QuestionScene: Auto-completing active exam quest")
+                    qm = self.scene_manager.quest_manager
+                    active_q = qm.get_active_quest()
+                    if active_q and active_q.id == "exam_quest":
+                        qm._complete_active_quest()
+                        print("[TRACE] QuestionScene: Quest completed")
+                        
+                print("[TRACE] QuestionScene: Starting sequence to switch_scene(celebration)")
+                Sequence(
+                    Wait(1.0), # Wait 1 second before fading
+                    Func(print, "[TRACE] QuestionScene: Inside Sequence, calling switch_scene"),
+                    Func(self.scene_manager.switch_scene, "celebration", final_score=displayed_score)
+                ).start()
+                print("[TRACE] QuestionScene: Sequence started")
+            else:
+                self.rating_ui = RatingPopup.show(
+                    camera_ui=camera.ui,
+                    rating=rating,
+                    score=self.score_manager.current_score,
+                    coins=self.score_manager.earned_coins,
+                    exp=self.score_manager.earned_exp,
+                    is_exam=is_exam,
+                    correct_answers=self.score_manager.correct_answers
+                )
+        else:
+            # For practice lessons, show LessonCompletePopup instead
+            next_lesson = None
+            if hasattr(self.scene_manager, 'quest_manager'):
+                qm = self.scene_manager.quest_manager
+                active_q = qm.get_active_quest()
+                if active_q and active_q.next_quest_id:
+                    next_q = qm.get_quest(active_q.next_quest_id)
+                    if next_q:
+                        next_lesson = next_q.target_building
+            
+            # The original Title might be "Grammar Practice", we can just use self.building_name + " Basics" or something
+            title = f"{self.building_name} Practice"
+            self.rating_ui = LessonCompletePopup.show(
+                camera_ui=camera.ui,
+                title=title,
+                score=self.score_manager.correct_answers,
+                total=self.manager.get_total_questions(),
+                next_lesson=next_lesson,
+                on_close=self._on_popup_closed
+            )
+
+    def _on_popup_closed(self) -> None:
+        """Called when LessonCompletePopup is closed by the player."""
+        self.rating_ui = None
+        
+        # Auto-complete the quest if we meet the target amount
+        if hasattr(self.scene_manager, 'quest_manager'):
+            qm = self.scene_manager.quest_manager
+            active_q = qm.get_active_quest()
+            if active_q and active_q.target_building.lower() == self.building_name.lower():
+                if qm.profile.quest_progress >= active_q.target_amount:
+                    qm._complete_active_quest()
+        
+        # Transition back to campus
+        if hasattr(self.scene_manager, 'transition_manager'):
+            self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus")
+        else:
+            self.scene_manager.switch_scene("campus")
 
     def update_scene(self, delta_time: float) -> None:
         """Handle user input for answering and returning."""
@@ -302,6 +366,12 @@ class QuestionScene(BaseScene):
             return
             
         if key == 'escape':
+            # Only handle escape if we are not showing LessonCompletePopup which takes over
+            # Or if it's an exam (where rating_ui is RatingPopup entity, which doesn't intercept input by itself)
+            is_lesson_popup = self.rating_ui and hasattr(self.rating_ui, 'is_closing')
+            if is_lesson_popup:
+                return
+                
             if self.manager.is_finished():
                 if hasattr(self.scene_manager, 'transition_manager'):
                     self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus")
