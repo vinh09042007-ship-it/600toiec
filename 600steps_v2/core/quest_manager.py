@@ -39,7 +39,7 @@ class QuestManager:
             description="Complete the grammar lesson.",
             objective_text="Complete Grammar practice.",
             target_building="Grammar",
-            target_amount=10,
+            target_amount=1,
             reward_coin=50,
             reward_exp=100,
             npc_name="Grammar Professor",
@@ -55,7 +55,7 @@ class QuestManager:
             description="Complete the vocabulary lesson.",
             objective_text="Complete Vocabulary practice.",
             target_building="Vocabulary",
-            target_amount=10,
+            target_amount=1,
             reward_coin=50,
             reward_exp=100,
             npc_name="Vocabulary Professor",
@@ -71,7 +71,7 @@ class QuestManager:
             description="Complete the listening lesson.",
             objective_text="Complete Listening practice.",
             target_building="Listening",
-            target_amount=10,
+            target_amount=1,
             reward_coin=50,
             reward_exp=100,
             npc_name="Listening Professor",
@@ -87,7 +87,7 @@ class QuestManager:
             description="Complete the reading lesson.",
             objective_text="Complete Reading practice.",
             target_building="Reading",
-            target_amount=10,
+            target_amount=1,
             reward_coin=50,
             reward_exp=100,
             npc_name="Reading Professor",
@@ -285,37 +285,28 @@ class QuestManager:
             l_passed = getattr(self.profile, 'listening_passed', False)
             r_passed = getattr(self.profile, 'reading_passed', False)
             
-            g_check = "<green>[OK]" if g_passed else "<white>[  ]"
-            g_color = "<green>" if g_passed else "<white>"
-            
-            v_check = "<green>[OK]" if v_passed else "<white>[  ]"
-            v_color = "<green>" if v_passed else "<white>"
-            
-            l_check = "<green>[OK]" if l_passed else "<white>[  ]"
-            l_color = "<green>" if l_passed else "<white>"
-            
-            r_check = "<green>[OK]" if r_passed else "<white>[  ]"
-            r_color = "<green>" if r_passed else "<white>"
-            
             total_passed = sum([g_passed, v_passed, l_passed, r_passed])
-            percentage = int((total_passed / 4) * 100)
             
-            bar_fill = "#" * int(total_passed * 2.5) # Max 10
-            bar_empty = "-" * (10 - len(bar_fill))
-            bar = f"[{bar_fill}{bar_empty}]"
+            def format_check(name, passed):
+                if passed:
+                    return f"<green>[PASS] {name}<white>"
+                else:
+                    return f"<red>[LOCKED] {name}<white>"
             
-            lines = [
-                "<yellow>FINAL TOEIC EXAM LOCKED",
-                "<white>Complete all learning buildings first.",
-                "",
-                f"{g_check} {g_color}Grammar",
-                f"{v_check} {v_color}Vocabulary",
-                f"{l_check} {l_color}Listening",
-                f"{r_check} {r_color}Reading",
-                "",
-                f"<cyan>Progress: {total_passed} / 4 Buildings Completed",
-                f"<cyan>{bar} {percentage}%"
-            ]
+            lines = []
+            if total_passed < 4:
+                lines.append("🔒 <yellow>FINAL EXAM LOCKED<white>")
+                lines.append("Complete the following first:\n")
+            else:
+                lines.append("<green>FINAL EXAM UNLOCKED<white>")
+                lines.append("You may now enter the Final TOEIC Exam.\n")
+                
+            lines.append(format_check("Grammar", g_passed))
+            lines.append(format_check("Vocabulary", v_passed))
+            lines.append(format_check("Listening", l_passed))
+            lines.append(format_check("Reading", r_passed))
+            
+            lines.append(f"\n<cyan>Progress: {total_passed} / 4<white>")
             
             return "\n".join(lines)
         return "Not available."

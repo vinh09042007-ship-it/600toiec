@@ -75,6 +75,7 @@ class Game:
         self.scene_manager = SceneManager(player_profile=self.player_profile)
         self.scene_manager.transition_manager = self.transition_manager
         self.scene_manager.quest_manager = self.quest_manager # Inject into SceneManager
+        self.scene_manager.hud_ui = self.hud_ui # Inject HUD for scene-specific toggling
         
         campus = CampusScene(self.scene_manager)
         building = BuildingScene(self.scene_manager)

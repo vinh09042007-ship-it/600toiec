@@ -113,14 +113,34 @@ class QuestionScene(BaseScene):
         self.rating_ui = None
         self.rating_ui = None
         self.current_audio = None
+        self.current_question_token = 0
         
         # Debounce
         self.was_key_pressed = False
+
+    def _stop_audio(self) -> None:
+        """Safely stops and destroys current audio to prevent overlaps/leaks."""
+        if hasattr(self, 'current_audio') and self.current_audio:
+            try:
+                self.current_audio.stop()
+            except Exception:
+                pass
+            from ursina import destroy
+            destroy(self.current_audio)
+            self.current_audio = None
+
 
     def on_enter(self, **kwargs) -> None:
         """Setup state when entering the question scene."""
         self.building_name = kwargs.get("building_name", "Unknown")
         self.building_title.text = f"{self.building_name} Practice"
+        
+        # Hide HUD for learning buildings, show for exam
+        if hasattr(self.scene_manager, 'hud_ui'):
+            if self.building_name.lower() == "exam":
+                self.scene_manager.hud_ui.enable()
+            else:
+                self.scene_manager.hud_ui.disable()
         
         # Load questions dynamically from JSON with a limit
         category = self.building_name.lower()
@@ -201,10 +221,8 @@ class QuestionScene(BaseScene):
                 self.context_text.enabled = True
                 
                 # Audio playback logic
-                if hasattr(self, 'current_audio') and self.current_audio:
-                    self.current_audio.stop()
-                    self.current_audio = None
-                    
+                self._stop_audio()
+                
                 if category in ["listening", "exam"] and hasattr(q, 'audio') and q.audio:
                     from pathlib import Path
                     audio_path = Path(__file__).resolve().parent.parent / "assets" / "audio" / "listening" / q.audio
@@ -327,6 +345,7 @@ class QuestionScene(BaseScene):
             wrong = total - correct
             accuracy = (correct / total * 100.0) if total > 0 else 0.0
             passed = correct >= 5
+            self.session_passed = passed
             
             was_exam_unlocked = False
             qm = None
@@ -340,6 +359,9 @@ class QuestionScene(BaseScene):
                     setattr(profile, f"{building_key}_passed", True)
                     from core.save_manager import SaveManager
                     SaveManager.save_profile(profile)
+                
+                if qm:
+                    qm.add_progress(1, self.building_name)
             
             if qm and not was_exam_unlocked and qm.is_building_unlocked("exam"):
                 from ui.quest_notification import QuestNotification
@@ -371,7 +393,8 @@ class QuestionScene(BaseScene):
             qm = self.scene_manager.quest_manager
             active_q = qm.get_active_quest()
             if active_q and active_q.target_building.lower() == self.building_name.lower():
-                if qm.profile.quest_progress >= active_q.target_amount:
+                if getattr(self, 'session_passed', False):
+                    qm.profile.quest_progress = active_q.target_amount
                     qm._complete_active_quest()
         
         # Transition back to campus
@@ -458,17 +481,23 @@ class QuestionScene(BaseScene):
             # Combo feedback
             if self.minigame_manager.current_combo >= 2:
                 ComboPopup.show(camera.ui, f"COMBO x{self.minigame_manager.current_combo}", position=(-0.4, 0.2))
-            
-            # Notify QuestManager
-            if hasattr(self.scene_manager, 'quest_manager'):
-                self.scene_manager.quest_manager.add_progress(1, self.building_name)
         else:
             correct_letter = ["A", "B", "C", "D"][q.correct_index - 1]
             self.feedback_text.text = f"Wrong!\nCorrect Answer: {correct_letter}"
             self.feedback_text.color = color.red
             
-        # Move to next question after 1.5 seconds
-        invoke(self._next_question, delay=1.5)
+        # Use token to prevent callbacks if scene was exited
+        current_token = self.current_question_token
+        invoke(self._next_question_callback, current_token, delay=1.5)
+        
+    def _next_question_callback(self, token: int) -> None:
+        """Callback to advance question, validated by token."""
+        if token != self.current_question_token:
+            return
+        if not self.enabled:
+            return
+        self._next_question()
+
         
     def _next_question(self) -> None:
         self.feedback_text.enabled = False
@@ -478,9 +507,11 @@ class QuestionScene(BaseScene):
 
     def on_exit(self) -> None:
         """Cleanup."""
-        if hasattr(self, 'current_audio') and self.current_audio:
-            self.current_audio.stop()
-            self.current_audio = None
+        if hasattr(self.scene_manager, 'hud_ui'):
+            self.scene_manager.hud_ui.enable()
+            
+        self.current_question_token += 1 # Invalidate any pending next_question invokes
+        self._stop_audio()
             
         if self.rating_ui:
             destroy(self.rating_ui)

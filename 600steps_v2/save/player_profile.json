@@ -1,43 +1,41 @@
 {
-    "player_name": "Student",
-    "total_score": 930,
-    "total_exp": 3260,
-    "total_coins": 1630,
-    "current_level": 33,
+    "player_name": "Test",
+    "total_score": 100,
+    "total_exp": 600,
+    "total_coins": 300,
+    "current_level": 7,
     "target_toeic_score": 600,
-    "total_correct_answers": 93,
-    "total_wrong_answers": 120,
-    "total_practices": 30,
-    "highest_score": 90,
+    "total_correct_answers": 10,
+    "total_wrong_answers": 20,
+    "total_practices": 3,
+    "highest_score": 40,
     "building_stats": {
         "Grammar": {
-            "completed": 5,
+            "completed": 0,
             "passed": true
         },
         "Vocabulary": {
-            "completed": 7,
+            "completed": 0,
             "passed": true
         },
         "Listening": {
-            "completed": 4,
+            "completed": 1,
             "passed": true
         },
         "Reading": {
-            "completed": 7,
+            "completed": 0,
             "passed": true
         },
         "Exam": {
-            "completed": 7
+            "completed": 2
         }
     },
-    "active_quest_id": null,
+    "active_quest_id": "exam_quest",
     "quest_progress": 0,
     "completed_quests": [
-        "tutorial_grammar",
         "grammar_lesson",
         "vocabulary_lesson",
         "listening_lesson",
-        "reading_lesson",
-        "exam_quest"
+        "reading_lesson"
     ]
 }

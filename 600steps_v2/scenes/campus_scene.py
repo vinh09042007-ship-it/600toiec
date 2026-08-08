@@ -209,3 +209,5 @@ class CampusScene(BaseScene):
         """Called when leaving the campus."""
         # Ensure UI prompt is hidden
         self.interaction_manager.prompt.enabled = False
+        self.interaction_manager.locked_panel.enabled = False
+        self.interaction_manager.locked_text.enabled = False

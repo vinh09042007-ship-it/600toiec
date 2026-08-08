@@ -119,19 +119,23 @@ class InteractionManager:
                         is_unlocked = self.quest_manager.is_building_unlocked(b_name)
                     
                     if is_unlocked:
-                        self.prompt.text = "FINAL TOEIC EXAM\n[E] Enter Final TOEIC Exam"
-                        self.prompt.enabled = True
-                        self.locked_panel.enabled = False
-                        self.locked_text.enabled = False
+                        self.prompt.text = "FINAL TOEIC EXAM - UNLOCKED\n[E] Enter Final TOEIC Exam"
                     else:
-                        self.prompt.enabled = False
-                        if self.quest_manager:
-                            req_text = self.quest_manager.get_building_lock_requirement(b_name)
-                            self.locked_text.text = req_text
-                        self.locked_panel.enabled = True
-                        self.locked_text.enabled = True
+                        self.prompt.text = "FINAL TOEIC EXAM - LOCKED\nComplete all 4 learning buildings first.\n[E] Interact"
+                        
+                    self.prompt.enabled = True
+                    self.locked_panel.enabled = False
+                    self.locked_text.enabled = False
                 else:
-                    self.prompt.text = f"[E] Enter {b_name}"
+                    passed = False
+                    if self.quest_manager:
+                        passed = getattr(self.quest_manager.profile, f"{b_name.lower()}_passed", False)
+                        
+                    if passed:
+                        self.prompt.text = f"{b_name} - PASSED\n[E] Enter {b_name}"
+                    else:
+                        self.prompt.text = f"{b_name} - Not Passed\n[E] Enter {b_name}"
+                        
                     self.prompt.enabled = True
                     self.locked_panel.enabled = False
                     self.locked_text.enabled = False
