@@ -8,6 +8,7 @@ class NPCVisual(Entity):
     """
     def __init__(self, skin_color=color.rgb(255, 205, 175), shirt_color=color.cyan, pant_color=color.dark_gray, **kwargs):
         super().__init__(**kwargs)
+        self.rotation_y = 180 # Fix visual orientation
         
         # Scaling constants to mimic humanoid proportions
         body_scale = (0.8, 1.2, 0.4)
@@ -65,6 +66,13 @@ class NPCVisual(Entity):
             position=(0.25, -0.05, 0)
         )
         
+        # New details: Hair, Glasses, Shoes
+        self.hair = Entity(parent=self.head, model='cube', color=color.gray, scale=(1.05, 0.3, 1.05), position=(0, 0.4, 0))
+        self.glasses = Entity(parent=self.head, model='cube', color=color.black, scale=(1.05, 0.1, 0.5), position=(0, 0, -0.26))
+        
+        self.left_shoe = Entity(parent=self.left_leg, model='cube', color=color.black, scale=(1.05, 0.2, 1.2), position=(0, -0.4, 0.1))
+        self.right_shoe = Entity(parent=self.right_leg, model='cube', color=color.black, scale=(1.05, 0.2, 1.2), position=(0, -0.4, 0.1))
+        
         # Animation properties
         self.anim_speed = 2.0
         self.anim_amplitude = 0.05
@@ -83,7 +91,7 @@ class NPC(Entity):
     Logic container for an interactable NPC.
     Separates collision/interaction logic from visual rendering.
     """
-    def __init__(self, name: str, role: str, position: tuple[float, float, float], dialogue: List[str], skin_color=color.rgb(255, 205, 175), shirt_color=color.cyan, pant_color=color.dark_gray):
+    def __init__(self, name: str, role: str, position: tuple[float, float, float], dialogue: List[str], skin_color=color.rgb(255, 205, 175), shirt_color=color.cyan, pant_color=color.dark_gray, custom_model: str = None, custom_texture: str = None, custom_scale: float = 1.0):
         super().__init__(
             position=position,
             collider='box' # Invisible collider for interaction distance
@@ -102,12 +110,21 @@ class NPC(Entity):
         self.quest_icon = QuestIcon(self)
         
         # Visual Model
-        self.visual = NPCVisual(
-            parent=self,
-            skin_color=skin_color,
-            shirt_color=shirt_color,
-            pant_color=pant_color
-        )
+        if custom_model:
+            self.visual = Entity(
+                parent=self,
+                model=custom_model,
+                texture=custom_texture,
+                scale=custom_scale,
+                rotation_y=180
+            )
+        else:
+            self.visual = NPCVisual(
+                parent=self,
+                skin_color=skin_color,
+                shirt_color=shirt_color,
+                pant_color=pant_color
+            )
         
         # 3D Name Label hovering above the head
         self.name_label = Text(

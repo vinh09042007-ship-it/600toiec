@@ -26,12 +26,12 @@ class DebugMenu(Entity):
         elif key == 'f10':
             print("[TRACE] DebugMenu: F10 pressed: Passing Final Exam with score 650")
             self._complete_specific_quest('exam_quest')
-            print("[TRACE] DebugMenu: Calling switch_scene to celebration")
-            self.game.scene_manager.switch_scene("celebration", final_score=650)
+            print("[TRACE] DebugMenu: Calling switch_scene to campus with game_completed=True")
+            self.game.scene_manager.switch_scene("campus", final_score=650, game_completed=True)
             print("[TRACE] DebugMenu: switch_scene returned")
         elif key == 'f11':
-            print("[DEBUG] F11 pressed: Jumping to Celebration Scene")
-            self.game.scene_manager.switch_scene("celebration", final_score=650)
+            print("[DEBUG] F11 pressed: Triggering Victory Overlay on Campus")
+            self.game.scene_manager.switch_scene("campus", final_score=650, game_completed=True)
         elif key == 'f12':
             print("[DEBUG] F12 pressed: Resetting Progress")
             self._reset_progress()

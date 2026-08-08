@@ -25,6 +25,9 @@ class QuestionScene(BaseScene):
     def setup(self) -> None:
         """Initialize UI elements."""
         
+        from ursina import window
+        window.color = color.rgb(12/255, 20/255, 35/255)
+        
         # UI Elements
         # Live Score UI
         self.score_text = Text(text="Score: 0", position=(-0.8, 0.45), scale=1.5, color=color.gold, parent=self)
@@ -37,7 +40,7 @@ class QuestionScene(BaseScene):
             position=(0, 0.4),
             origin=(0, 0),
             scale=2.5,
-            color=color.yellow,
+            color=color.rgb(0, 230/255, 255/255),
             parent=self
         )
         
@@ -46,7 +49,7 @@ class QuestionScene(BaseScene):
             position=(0, 0.3),
             origin=(0, 0),
             scale=1.5,
-            color=color.light_gray,
+            color=color.rgb(180/255, 200/255, 215/255),
             parent=self
         )
         
@@ -69,17 +72,17 @@ class QuestionScene(BaseScene):
             enabled=False
         )
         
-        self.answer_a = Text(text="A. ", position=(-0.2, 0), scale=1.5, parent=self)
-        self.answer_b = Text(text="B. ", position=(-0.2, -0.05), scale=1.5, parent=self)
-        self.answer_c = Text(text="C. ", position=(-0.2, -0.1), scale=1.5, parent=self)
-        self.answer_d = Text(text="D. ", position=(-0.2, -0.15), scale=1.5, parent=self)
+        self.answer_a = Text(text="A. ", position=(-0.2, 0), scale=1.5, color=color.white, parent=self)
+        self.answer_b = Text(text="B. ", position=(-0.2, -0.05), scale=1.5, color=color.white, parent=self)
+        self.answer_c = Text(text="C. ", position=(-0.2, -0.1), scale=1.5, color=color.white, parent=self)
+        self.answer_d = Text(text="D. ", position=(-0.2, -0.15), scale=1.5, color=color.white, parent=self)
         
         self.instruction_text = Text(
             text="Press 1 / 2 / 3 / 4 to answer.\nESC to return.",
             position=(0, -0.3),
             origin=(0, 0),
             scale=1.5,
-            color=color.cyan,
+            color=color.rgb(0, 230/255, 255/255),
             parent=self
         )
         

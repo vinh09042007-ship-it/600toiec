@@ -1,14 +1,14 @@
 {
     "player_name": "Test",
-    "total_score": 670,
-    "total_exp": 2740,
-    "total_coins": 1370,
-    "current_level": 28,
+    "total_score": 1290,
+    "total_exp": 3980,
+    "total_coins": 1990,
+    "current_level": 40,
     "target_toeic_score": 600,
-    "total_correct_answers": 67,
-    "total_wrong_answers": 73,
-    "total_practices": 14,
-    "highest_score": 70,
+    "total_correct_answers": 129,
+    "total_wrong_answers": 101,
+    "total_practices": 23,
+    "highest_score": 90,
     "building_stats": {
         "Grammar": {
             "completed": 0,
@@ -27,7 +27,7 @@
             "passed": true
         },
         "Exam": {
-            "completed": 13
+            "completed": 22
         }
     },
     "active_quest_id": null,

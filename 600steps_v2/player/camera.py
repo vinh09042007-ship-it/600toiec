@@ -20,6 +20,8 @@ class PlayerCamera:
         """
         self.target: Player = target_player
         self.offset: Vec3 = Vec3(*const.CAMERA_OFFSET)
+        self.is_cinematic: bool = False
+
         
         # Initial camera setup (snap to position)
         camera.position = self.target.position + self.offset
@@ -34,6 +36,9 @@ class PlayerCamera:
         Args:
             delta_time (float): The time elapsed since the last frame.
         """
+        if self.is_cinematic:
+            return
+            
         # Calculate the desired position
         desired_position = self.target.position + self.offset
         
