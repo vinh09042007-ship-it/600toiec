@@ -1,14 +1,14 @@
 {
     "player_name": "Test",
-    "total_score": 100,
-    "total_exp": 600,
-    "total_coins": 300,
-    "current_level": 7,
+    "total_score": 670,
+    "total_exp": 2740,
+    "total_coins": 1370,
+    "current_level": 28,
     "target_toeic_score": 600,
-    "total_correct_answers": 10,
-    "total_wrong_answers": 20,
-    "total_practices": 3,
-    "highest_score": 40,
+    "total_correct_answers": 67,
+    "total_wrong_answers": 73,
+    "total_practices": 14,
+    "highest_score": 70,
     "building_stats": {
         "Grammar": {
             "completed": 0,
@@ -27,15 +27,17 @@
             "passed": true
         },
         "Exam": {
-            "completed": 2
+            "completed": 13
         }
     },
-    "active_quest_id": "exam_quest",
+    "active_quest_id": null,
     "quest_progress": 0,
     "completed_quests": [
         "grammar_lesson",
         "vocabulary_lesson",
         "listening_lesson",
-        "reading_lesson"
-    ]
+        "reading_lesson",
+        "exam_quest"
+    ],
+    "game_completed": true
 }

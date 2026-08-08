@@ -313,7 +313,7 @@ class QuestionScene(BaseScene):
         is_exam = self.building_name.lower() == "exam"
         
         if is_exam:
-            displayed_score = self.score_manager.current_score * 6
+            displayed_score = self.score_manager.correct_answers * 100
             self.exam_passed = displayed_score >= profile.target_toeic_score
             
             if self.exam_passed:
@@ -326,18 +326,25 @@ class QuestionScene(BaseScene):
                     if active_q and active_q.id == "exam_quest":
                         qm._complete_active_quest()
                         print("[TRACE] QuestionScene: Quest completed")
-                        
-            self.rating_ui = RatingPopup.show(
-                camera_ui=camera.ui,
-                rating=rating,
-                score=self.score_manager.current_score,
-                coins=self.score_manager.earned_coins,
-                exp=self.score_manager.earned_exp,
-                is_exam=is_exam,
-                correct_answers=self.score_manager.correct_answers,
-                target_score=profile.target_toeic_score
-            )
-            self.rating_creation_time = time.time()
+                
+                # Directly transition to celebration scene without showing popup
+                if hasattr(self.scene_manager, 'transition_manager'):
+                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "celebration", final_score=displayed_score, correct_answers=self.score_manager.correct_answers)
+                else:
+                    self.scene_manager.switch_scene("celebration", final_score=displayed_score, correct_answers=self.score_manager.correct_answers)
+                return
+            else:
+                self.rating_ui = RatingPopup.show(
+                    camera_ui=camera.ui,
+                    rating=rating,
+                    score=self.score_manager.current_score,
+                    coins=self.score_manager.earned_coins,
+                    exp=self.score_manager.earned_exp,
+                    is_exam=is_exam,
+                    correct_answers=self.score_manager.correct_answers,
+                    target_score=profile.target_toeic_score
+                )
+                self.rating_creation_time = time.time()
         else:
             # For practice lessons, show LessonCompletePopup instead
             correct = self.score_manager.correct_answers
@@ -437,9 +444,9 @@ class QuestionScene(BaseScene):
                 is_exam = self.building_name.lower() == "exam"
                 if is_exam and key in ('enter', 'return') and getattr(self, 'exam_passed', False):
                     if hasattr(self.scene_manager, 'transition_manager'):
-                        self.scene_manager.transition_manager.transition_to(self.scene_manager, "celebration", final_score=self.score_manager.current_score * 6)
+                        self.scene_manager.transition_manager.transition_to(self.scene_manager, "celebration", final_score=self.score_manager.correct_answers * 100)
                     else:
-                        self.scene_manager.switch_scene("celebration", final_score=self.score_manager.current_score * 6)
+                        self.scene_manager.switch_scene("celebration", final_score=self.score_manager.correct_answers * 100)
                 else:
                     # Normal return to campus or failure return
                     if key in ('escape', 'enter', 'return'): 
@@ -458,6 +465,7 @@ class QuestionScene(BaseScene):
         """Check the selected answer and display feedback."""
         self.has_answered = True
         self.feedback_text.enabled = True
+        self._stop_audio()
         
         q = self.manager.get_current_question()
         is_correct = self.manager.submit_answer(choice)

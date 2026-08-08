@@ -15,7 +15,7 @@ class RatingPopup:
         )
         
         if is_exam:
-            displayed_score = score * 6
+            displayed_score = correct_answers * 100
             passed = displayed_score >= target_score
             
             # Animate background

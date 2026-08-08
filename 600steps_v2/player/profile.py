@@ -29,6 +29,7 @@ class PlayerProfile:
         self.vocabulary_passed = False
         self.listening_passed = False
         self.reading_passed = False
+        self.game_completed = False
         
         # Quest Tracking
         self.active_quest_id: str | None = None
@@ -124,7 +125,8 @@ class PlayerProfile:
             },
             "active_quest_id": self.active_quest_id,
             "quest_progress": self.quest_progress,
-            "completed_quests": self.completed_quests
+            "completed_quests": self.completed_quests,
+            "game_completed": getattr(self, 'game_completed', False)
         }
 
     @classmethod
@@ -165,5 +167,6 @@ class PlayerProfile:
         profile.active_quest_id = data.get("active_quest_id")
         profile.quest_progress = data.get("quest_progress", 0)
         profile.completed_quests = data.get("completed_quests", [])
+        profile.game_completed = data.get("game_completed", False)
         
         return profile
