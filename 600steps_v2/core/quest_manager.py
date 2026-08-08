@@ -261,7 +261,10 @@ class QuestManager:
         elif building == "reading":
             result = self.profile.active_quest_id == "reading_lesson" or "reading_lesson" in self.profile.completed_quests
         elif building == "exam" or building == "exam center":
-            result = self.profile.active_quest_id == "exam_quest" or "exam_quest" in self.profile.completed_quests
+            result = getattr(self.profile, 'grammar_passed', False) and \
+                     getattr(self.profile, 'vocabulary_passed', False) and \
+                     getattr(self.profile, 'listening_passed', False) and \
+                     getattr(self.profile, 'reading_passed', False)
             
         return result
 
@@ -277,5 +280,42 @@ class QuestManager:
         if building == "reading":
             return "Complete Listening Practice first."
         if building == "exam" or building == "exam center":
-            return "Complete all required training first."
+            g_passed = getattr(self.profile, 'grammar_passed', False)
+            v_passed = getattr(self.profile, 'vocabulary_passed', False)
+            l_passed = getattr(self.profile, 'listening_passed', False)
+            r_passed = getattr(self.profile, 'reading_passed', False)
+            
+            g_check = "<green>[OK]" if g_passed else "<white>[  ]"
+            g_color = "<green>" if g_passed else "<white>"
+            
+            v_check = "<green>[OK]" if v_passed else "<white>[  ]"
+            v_color = "<green>" if v_passed else "<white>"
+            
+            l_check = "<green>[OK]" if l_passed else "<white>[  ]"
+            l_color = "<green>" if l_passed else "<white>"
+            
+            r_check = "<green>[OK]" if r_passed else "<white>[  ]"
+            r_color = "<green>" if r_passed else "<white>"
+            
+            total_passed = sum([g_passed, v_passed, l_passed, r_passed])
+            percentage = int((total_passed / 4) * 100)
+            
+            bar_fill = "#" * int(total_passed * 2.5) # Max 10
+            bar_empty = "-" * (10 - len(bar_fill))
+            bar = f"[{bar_fill}{bar_empty}]"
+            
+            lines = [
+                "<yellow>FINAL TOEIC EXAM LOCKED",
+                "<white>Complete all learning buildings first.",
+                "",
+                f"{g_check} {g_color}Grammar",
+                f"{v_check} {v_color}Vocabulary",
+                f"{l_check} {l_color}Listening",
+                f"{r_check} {r_color}Reading",
+                "",
+                f"<cyan>Progress: {total_passed} / 4 Buildings Completed",
+                f"<cyan>{bar} {percentage}%"
+            ]
+            
+            return "\n".join(lines)
         return "Not available."

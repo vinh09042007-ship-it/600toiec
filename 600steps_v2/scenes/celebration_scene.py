@@ -1,9 +1,24 @@
-from ursina import Entity, color, Text, camera, Sky, destroy
+import random
+from ursina import Entity, color, Text, camera, Sky, destroy, time, Vec3
 from scenes.base_scene import BaseScene
 from player.controller import PlayerController
 from player.camera import PlayerCamera
 from world.npc import NPC
 import utils.constants as const
+
+class Confetti(Entity):
+    def __init__(self, **kwargs):
+        super().__init__(model='quad', double_sided=True, **kwargs)
+        self.velocity = Vec3(random.uniform(-2, 2), random.uniform(-3, -6), random.uniform(-2, 2))
+        self.rot_speed = Vec3(random.uniform(100, 300), random.uniform(100, 300), random.uniform(100, 300))
+        
+    def update(self):
+        self.position += self.velocity * time.dt
+        self.rotation += self.rot_speed * time.dt
+        if self.y < 0:
+            self.y = random.uniform(15, 25)
+            self.x = random.uniform(-10, 10)
+            self.z = random.uniform(0, 10)
 
 class CelebrationScene(BaseScene):
     def __init__(self, scene_manager, **kwargs):
@@ -23,6 +38,18 @@ class CelebrationScene(BaseScene):
             collider='box'
         )
         
+        # Particles
+        colors = [color.red, color.yellow, color.blue, color.green, color.magenta, color.cyan]
+        for _ in range(60):
+            c = Confetti(
+                parent=self,
+                color=random.choice(colors),
+                scale=random.uniform(0.1, 0.3),
+                position=(random.uniform(-10, 10), random.uniform(10, 25), random.uniform(0, 10)),
+                rotation=(random.uniform(0, 360), random.uniform(0, 360), random.uniform(0, 360))
+            )
+            self.entities_to_destroy.append(c)
+        
         # 2. Player and Camera
         from world.collision import WorldCollision
         self.world_collision = WorldCollision([]) # Empty collision for now
@@ -41,7 +68,7 @@ class CelebrationScene(BaseScene):
             name="Exam Supervisor",
             role="",
             position=(0, 0, 5),
-            dialogue=[],
+            dialogue=["Congratulations! You reached your TOEIC goal."],
             shirt_color=color.black,
             pant_color=color.dark_gray
         )
@@ -53,7 +80,7 @@ class CelebrationScene(BaseScene):
             name="Student 1",
             role="",
             position=(-3, 0, 4),
-            dialogue=[],
+            dialogue=["Amazing job!", "You did it!"],
             shirt_color=color.red,
             pant_color=color.blue
         )
@@ -65,7 +92,7 @@ class CelebrationScene(BaseScene):
             name="Student 2",
             role="",
             position=(3, 0, 4),
-            dialogue=[],
+            dialogue=["Keep aiming even higher!"],
             shirt_color=color.yellow,
             pant_color=color.blue
         )
@@ -78,20 +105,20 @@ class CelebrationScene(BaseScene):
         
         self.title_text = Text(
             parent=self.ui_container,
-            text="Congratulations!",
+            text="🎉 Goal Achieved!",
             origin=(0, 0),
             position=(0, 0.2),
             scale=3,
-            color=color.gold
+            color=color.rgba(255, 215, 0, 0)
         )
         
         self.sub_text = Text(
             parent=self.ui_container,
-            text="You reached your TOEIC goal!",
+            text="",
             origin=(0, 0),
             position=(0, 0),
             scale=2,
-            color=color.white
+            color=color.rgba(255, 255, 255, 0)
         )
         
         self.prompt_text = Text(
@@ -100,13 +127,31 @@ class CelebrationScene(BaseScene):
             origin=(0, 0),
             position=(0, -0.3),
             scale=1.5,
-            color=color.light_gray
+            color=color.rgba(200, 200, 200, 0)
         )
 
     def on_enter(self, **kwargs) -> None:
         self.final_score = kwargs.get("final_score", 600)
+        profile = self.scene_manager.player_profile
+        target = getattr(profile, 'target_toeic_score', 600)
+        
+        self.sub_text.text = (
+            f"Target Score: {target}\n"
+            f"Current Score: {self.final_score}\n\n"
+            f"Congratulations on reaching your TOEIC goal!"
+        )
+        
         # Force player rotation to look at the teacher initially
         self.player_controller.player.rotation = (0, 0, 0)
+        
+        # Fade UI in smoothly
+        self.title_text.animate_color(color.rgba(255, 215, 0, 255), duration=1.0)
+        self.sub_text.animate_color(color.rgba(255, 255, 255, 255), duration=1.0)
+        self.prompt_text.animate_color(color.rgba(200, 200, 200, 255), duration=1.0)
+        
+        # Fade UI out automatically after 5 seconds (leave prompt text visible)
+        self.title_text.animate_color(color.rgba(255, 215, 0, 0), duration=2.0, delay=5.0)
+        self.sub_text.animate_color(color.rgba(255, 255, 255, 0), duration=2.0, delay=5.0)
         
     def input(self, key: str) -> None:
         if not self.enabled: return

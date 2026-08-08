@@ -13,16 +13,18 @@ class InteractionManager:
     Detects player proximity to buildings and handles interaction inputs.
     """
     
-    def __init__(self, player: Player, campus: Campus) -> None:
+    def __init__(self, player: Player, campus: Campus, quest_manager=None) -> None:
         """
         Initializes the interaction system.
         
         Args:
             player (Player): The player entity to check distance from.
             campus (Campus): The campus containing the buildings.
+            quest_manager: The game's quest manager for lock states.
         """
         self.player = player
         self.campus = campus
+        self.quest_manager = quest_manager
         self.npcs = []
         self.nearest_interactable = None
         self.interactable_type = None # 'building' or 'npc'
@@ -36,6 +38,24 @@ class InteractionManager:
             position=(0, -0.35),
             origin=(0, 0),
             scale=2,
+            enabled=False
+        )
+        
+        # Locked Information Panel
+        self.locked_panel = Entity(
+            parent=camera.ui,
+            model='quad',
+            color=color.rgba(0, 0, 0, 0.85),
+            scale=(0.55, 0.40),
+            position=(0, 0.15),
+            enabled=False
+        )
+        self.locked_text = Text(
+            parent=camera.ui,
+            text="",
+            origin=(0, 0),
+            position=(0, 0.15),
+            scale=1.2,
             enabled=False
         )
         
@@ -92,14 +112,39 @@ class InteractionManager:
                 self.last_found = self.nearest_interactable
                 
             if self.interactable_type == 'building':
-                self.prompt.text = f"[E] Enter {self.nearest_interactable.name}"
+                b_name = self.nearest_interactable.name
+                if b_name.lower() == 'exam' or b_name.lower() == 'exam center':
+                    is_unlocked = True
+                    if self.quest_manager:
+                        is_unlocked = self.quest_manager.is_building_unlocked(b_name)
+                    
+                    if is_unlocked:
+                        self.prompt.text = "FINAL TOEIC EXAM\n[E] Enter Final TOEIC Exam"
+                        self.prompt.enabled = True
+                        self.locked_panel.enabled = False
+                        self.locked_text.enabled = False
+                    else:
+                        self.prompt.enabled = False
+                        if self.quest_manager:
+                            req_text = self.quest_manager.get_building_lock_requirement(b_name)
+                            self.locked_text.text = req_text
+                        self.locked_panel.enabled = True
+                        self.locked_text.enabled = True
+                else:
+                    self.prompt.text = f"[E] Enter {b_name}"
+                    self.prompt.enabled = True
+                    self.locked_panel.enabled = False
+                    self.locked_text.enabled = False
             else:
                 self.prompt.text = f"[E] Talk to {self.nearest_interactable.npc_name}"
-                
-            self.prompt.enabled = True
+                self.prompt.enabled = True
+                self.locked_panel.enabled = False
+                self.locked_text.enabled = False
         else:
             self.last_found = None
             self.prompt.enabled = False
+            self.locked_panel.enabled = False
+            self.locked_text.enabled = False
 
     def _check_input(self) -> None:
         """

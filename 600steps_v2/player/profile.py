@@ -15,6 +15,7 @@ class PlayerProfile:
         self.total_exp = 0
         self.total_coins = 0
         self.current_level = 1
+        self.target_toeic_score = 600
         
         # Category tracking (number of times practiced)
         self.grammar_completed = 0
@@ -22,6 +23,12 @@ class PlayerProfile:
         self.listening_completed = 0
         self.reading_completed = 0
         self.exam_completed = 0
+        
+        # Progression state
+        self.grammar_passed = False
+        self.vocabulary_passed = False
+        self.listening_passed = False
+        self.reading_passed = False
         
         # Quest Tracking
         self.active_quest_id: str | None = None
@@ -103,15 +110,16 @@ class PlayerProfile:
             "total_exp": self.total_exp,
             "total_coins": self.total_coins,
             "current_level": self.current_level,
+            "target_toeic_score": self.target_toeic_score,
             "total_correct_answers": self.total_correct_answers,
             "total_wrong_answers": self.total_wrong_answers,
             "total_practices": self.total_practices,
             "highest_score": self.highest_score,
             "building_stats": {
-                "Grammar": {"completed": self.grammar_completed},
-                "Vocabulary": {"completed": self.vocabulary_completed},
-                "Listening": {"completed": self.listening_completed},
-                "Reading": {"completed": self.reading_completed},
+                "Grammar": {"completed": self.grammar_completed, "passed": self.grammar_passed},
+                "Vocabulary": {"completed": self.vocabulary_completed, "passed": self.vocabulary_passed},
+                "Listening": {"completed": self.listening_completed, "passed": self.listening_passed},
+                "Reading": {"completed": self.reading_completed, "passed": self.reading_passed},
                 "Exam": {"completed": self.exam_completed},
             },
             "active_quest_id": self.active_quest_id,
@@ -129,6 +137,7 @@ class PlayerProfile:
         profile.total_exp = data.get("total_exp", 0)
         profile.total_coins = data.get("total_coins", 0)
         profile.current_level = data.get("current_level", 1)
+        profile.target_toeic_score = data.get("target_toeic_score", 600)
         
         # Global Statistics
         profile.total_correct_answers = data.get("total_correct_answers", 0)
@@ -139,9 +148,17 @@ class PlayerProfile:
         # Category tracking
         building_stats = data.get("building_stats", {})
         profile.grammar_completed = building_stats.get("Grammar", {}).get("completed", 0)
+        profile.grammar_passed = building_stats.get("Grammar", {}).get("passed", False)
+        
         profile.vocabulary_completed = building_stats.get("Vocabulary", {}).get("completed", 0)
+        profile.vocabulary_passed = building_stats.get("Vocabulary", {}).get("passed", False)
+        
         profile.listening_completed = building_stats.get("Listening", {}).get("completed", 0)
+        profile.listening_passed = building_stats.get("Listening", {}).get("passed", False)
+        
         profile.reading_completed = building_stats.get("Reading", {}).get("completed", 0)
+        profile.reading_passed = building_stats.get("Reading", {}).get("passed", False)
+        
         profile.exam_completed = building_stats.get("Exam", {}).get("completed", 0)
         
         # Quests

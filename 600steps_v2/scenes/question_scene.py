@@ -1,7 +1,7 @@
 """
 Question framework scene for TOEIC gameplay.
 """
-from ursina import Entity, Text, color, held_keys, camera, invoke, destroy, time
+from ursina import Entity, Text, color, held_keys, camera, invoke, destroy, time, Audio
 from .base_scene import BaseScene
 from core.quiz import QuestionManager
 from core.score_manager import ScoreManager
@@ -111,6 +111,8 @@ class QuestionScene(BaseScene):
         self.has_answered = False
         self.question_start_time = 0.0
         self.rating_ui = None
+        self.rating_ui = None
+        self.current_audio = None
         
         # Debounce
         self.was_key_pressed = False
@@ -190,13 +192,33 @@ class QuestionScene(BaseScene):
         category = self.building_name.lower()
         if category in ["reading", "listening", "exam"]:
             if q.context:
-                prefix = "Reading Passage\n\n" if category == "reading" else "Listening Script\n\n"
-                if category == "exam":
-                    prefix = "Passage / Script\n\n"
+                prefix = "Reading Passage\n\n" if category == "reading" else ""
+                if category == "exam" and not (hasattr(q, 'audio') and q.audio):
+                    prefix = "Reading Passage\n\n"
                     
                 self.context_text.text = prefix + q.context
+                self.context_text.color = color.light_gray
                 self.context_text.enabled = True
                 
+                # Audio playback logic
+                if hasattr(self, 'current_audio') and self.current_audio:
+                    self.current_audio.stop()
+                    self.current_audio = None
+                    
+                if category in ["listening", "exam"] and hasattr(q, 'audio') and q.audio:
+                    from pathlib import Path
+                    audio_path = Path(__file__).resolve().parent.parent / "assets" / "audio" / "listening" / q.audio
+                    
+                    if audio_path.exists():
+                        self.current_audio = Audio(f"assets/audio/listening/{q.audio}", autoplay=True, parent=camera.ui)
+                        self.current_audio.play()
+                        self.context_text.enabled = False
+                    else:
+                        prefix = f"[DEV WARNING: Missing audio {q.audio}]\n\n"
+                        self.context_text.text = prefix + q.context
+                        self.context_text.color = color.orange
+                        self.context_text.enabled = True
+                        
                 # Shift UI down to make room
                 self.question_text.position = (0, -0.05)
                 self.answer_a.position = (-0.2, -0.15)
@@ -274,11 +296,11 @@ class QuestionScene(BaseScene):
         
         if is_exam:
             displayed_score = self.score_manager.current_score * 6
-            if displayed_score >= 600:
-                print("[TRACE] QuestionScene: Exam passed, score > 600")
-                # Trigger cinematic celebration
-                
-                # Auto-complete the quest so HUD clears and progression saves
+            self.exam_passed = displayed_score >= profile.target_toeic_score
+            
+            if self.exam_passed:
+                print(f"[TRACE] QuestionScene: Exam passed, score >= {profile.target_toeic_score}")
+                # Auto-complete the quest so progression saves
                 if hasattr(self.scene_manager, 'quest_manager'):
                     print("[TRACE] QuestionScene: Auto-completing active exam quest")
                     qm = self.scene_manager.quest_manager
@@ -287,44 +309,58 @@ class QuestionScene(BaseScene):
                         qm._complete_active_quest()
                         print("[TRACE] QuestionScene: Quest completed")
                         
-                print("[TRACE] QuestionScene: Starting sequence to switch_scene(celebration)")
-                Sequence(
-                    Wait(1.0), # Wait 1 second before fading
-                    Func(print, "[TRACE] QuestionScene: Inside Sequence, calling switch_scene"),
-                    Func(self.scene_manager.switch_scene, "celebration", final_score=displayed_score)
-                ).start()
-                print("[TRACE] QuestionScene: Sequence started")
-            else:
-                self.rating_ui = RatingPopup.show(
-                    camera_ui=camera.ui,
-                    rating=rating,
-                    score=self.score_manager.current_score,
-                    coins=self.score_manager.earned_coins,
-                    exp=self.score_manager.earned_exp,
-                    is_exam=is_exam,
-                    correct_answers=self.score_manager.correct_answers
-                )
+            self.rating_ui = RatingPopup.show(
+                camera_ui=camera.ui,
+                rating=rating,
+                score=self.score_manager.current_score,
+                coins=self.score_manager.earned_coins,
+                exp=self.score_manager.earned_exp,
+                is_exam=is_exam,
+                correct_answers=self.score_manager.correct_answers,
+                target_score=profile.target_toeic_score
+            )
+            self.rating_creation_time = time.time()
         else:
             # For practice lessons, show LessonCompletePopup instead
-            next_lesson = None
+            correct = self.score_manager.correct_answers
+            total = self.manager.get_total_questions()
+            wrong = total - correct
+            accuracy = (correct / total * 100.0) if total > 0 else 0.0
+            passed = correct >= 5
+            
+            was_exam_unlocked = False
+            qm = None
             if hasattr(self.scene_manager, 'quest_manager'):
                 qm = self.scene_manager.quest_manager
-                active_q = qm.get_active_quest()
-                if active_q and active_q.next_quest_id:
-                    next_q = qm.get_quest(active_q.next_quest_id)
-                    if next_q:
-                        next_lesson = next_q.target_building
+                was_exam_unlocked = qm.is_building_unlocked("exam")
             
-            # The original Title might be "Grammar Practice", we can just use self.building_name + " Basics" or something
+            if passed:
+                building_key = self.building_name.lower()
+                if hasattr(profile, f"{building_key}_passed"):
+                    setattr(profile, f"{building_key}_passed", True)
+                    from core.save_manager import SaveManager
+                    SaveManager.save_profile(profile)
+            
+            if qm and not was_exam_unlocked and qm.is_building_unlocked("exam"):
+                from ui.quest_notification import QuestNotification
+                try:
+                    from ursina import Audio
+                    Audio('success', autoplay=True, loop=False)
+                except Exception:
+                    pass
+                QuestNotification.show_building_unlocked(camera.ui, "Exam")
+            
             title = f"{self.building_name} Practice"
             self.rating_ui = LessonCompletePopup.show(
                 camera_ui=camera.ui,
                 title=title,
-                score=self.score_manager.correct_answers,
-                total=self.manager.get_total_questions(),
-                next_lesson=next_lesson,
+                correct=correct,
+                wrong=wrong,
+                accuracy=accuracy,
+                passed=passed,
                 on_close=self._on_popup_closed
             )
+            self.rating_creation_time = time.time()
 
     def _on_popup_closed(self) -> None:
         """Called when LessonCompletePopup is closed by the player."""
@@ -365,7 +401,7 @@ class QuestionScene(BaseScene):
         if not self.enabled:
             return
             
-        if key == 'escape':
+        if key in ('escape', 'enter', 'return'):
             # Only handle escape if we are not showing LessonCompletePopup which takes over
             # Or if it's an exam (where rating_ui is RatingPopup entity, which doesn't intercept input by itself)
             is_lesson_popup = self.rating_ui and hasattr(self.rating_ui, 'is_closing')
@@ -373,15 +409,27 @@ class QuestionScene(BaseScene):
                 return
                 
             if self.manager.is_finished():
-                if hasattr(self.scene_manager, 'transition_manager'):
-                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus")
+                if hasattr(self, 'rating_creation_time') and __import__('time').time() - self.rating_creation_time < 1.0:
+                    return
+                is_exam = self.building_name.lower() == "exam"
+                if is_exam and key in ('enter', 'return') and getattr(self, 'exam_passed', False):
+                    if hasattr(self.scene_manager, 'transition_manager'):
+                        self.scene_manager.transition_manager.transition_to(self.scene_manager, "celebration", final_score=self.score_manager.current_score * 6)
+                    else:
+                        self.scene_manager.switch_scene("celebration", final_score=self.score_manager.current_score * 6)
                 else:
-                    self.scene_manager.switch_scene("campus")
+                    # Normal return to campus or failure return
+                    if key in ('escape', 'enter', 'return'): 
+                        if hasattr(self.scene_manager, 'transition_manager'):
+                            self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus")
+                        else:
+                            self.scene_manager.switch_scene("campus")
             else:
-                if hasattr(self.scene_manager, 'transition_manager'):
-                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "building", building_name=self.building_name)
-                else:
-                    self.scene_manager.switch_scene("building", building_name=self.building_name)
+                if key == 'escape':
+                    if hasattr(self.scene_manager, 'transition_manager'):
+                        self.scene_manager.transition_manager.transition_to(self.scene_manager, "building", building_name=self.building_name)
+                    else:
+                        self.scene_manager.switch_scene("building", building_name=self.building_name)
 
     def _check_answer(self, choice: int) -> None:
         """Check the selected answer and display feedback."""
@@ -430,6 +478,10 @@ class QuestionScene(BaseScene):
 
     def on_exit(self) -> None:
         """Cleanup."""
+        if hasattr(self, 'current_audio') and self.current_audio:
+            self.current_audio.stop()
+            self.current_audio = None
+            
         if self.rating_ui:
             destroy(self.rating_ui)
             self.rating_ui = None

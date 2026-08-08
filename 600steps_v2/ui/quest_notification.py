@@ -80,12 +80,19 @@ class QuestNotification:
             position=(0, 0.35) # Top-center
         )
         
+        if building_name.lower() == "exam" or building_name.lower() == "exam center":
+            bg.scale = (1.0, 0.4)
+            display_text = "FINAL TOEIC EXAM UNLOCKED!\n\nCongratulations!\nAll learning buildings have been completed.\nThe Final TOEIC Exam is now available."
+            duration = max(duration, 5.0)
+        else:
+            display_text = f"[{building_name} Building Unlocked]"
+            
         text = Text(
             parent=bg,
-            text=f"🔓 {building_name} Building Unlocked",
+            text=display_text,
             origin=(0, 0),
             position=(0, 0),
-            scale=3,
+            scale=2.5,
             color=color.rgba(0, 255, 255, 0)
         )
         

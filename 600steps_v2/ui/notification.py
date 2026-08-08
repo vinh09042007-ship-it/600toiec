@@ -29,6 +29,14 @@ class NotificationUI:
     def show(self, message: str, duration: float = 3.0):
         """Displays a notification for a set duration."""
         self.text.text = message
+        
+        num_lines = message.count('\n') + 1
+        if num_lines > 2:
+            self.bg.scale = (0.9, 0.15 + (num_lines * 0.05))
+            duration = max(duration, num_lines * 0.8)
+        else:
+            self.bg.scale = (0.8, 0.15)
+            
         self.bg.enabled = True
         self.text.enabled = True
         

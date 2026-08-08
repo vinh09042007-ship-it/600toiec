@@ -59,19 +59,20 @@ class QuestionLoader:
             # Determine limit
             if limit is not None:
                 actual_limit = limit
-            elif category == "vocabulary":
-                actual_limit = 5
             else:
                 actual_limit = QuestionLoader.DEFAULT_TEST_SIZE
             
-            # Random selection
-            if total_db_size <= actual_limit:
-                selected_questions = questions
-            else:
-                selected_questions = random.sample(questions, actual_limit)
-                
-            # Shuffle the selected subset
-            random.shuffle(selected_questions)
+            # Random selection to exactly match actual_limit
+            selected_questions = []
+            while len(selected_questions) < actual_limit:
+                needed = actual_limit - len(selected_questions)
+                if total_db_size <= needed:
+                    subset = list(questions)
+                    random.shuffle(subset)
+                    selected_questions.extend(subset)
+                else:
+                    subset = random.sample(questions, needed)
+                    selected_questions.extend(subset)
                 
             print(f"Selected: {len(selected_questions)}")
             print("Question sequence:")
@@ -108,31 +109,45 @@ class QuestionLoader:
             
         questions = []
         for item in data:
-            if "question" not in item or "choices" not in item or "answer" not in item:
-                raise KeyError(f"Missing required keys in {file_path.name}.")
+            try:
+                if "question" not in item or "choices" not in item or "answer" not in item:
+                    print(f"Skipping invalid question in {file_path.name}: Missing required keys.")
+                    continue
+                    
+                if not isinstance(item["choices"], list) or len(item["choices"]) != 4:
+                    print(f"Skipping invalid question in {file_path.name}: Choices must be an array of exactly 4 strings.")
+                    continue
+                    
+                correct_idx = int(item["answer"]) + 1
+                if correct_idx < 1 or correct_idx > 4:
+                    print(f"Skipping invalid question in {file_path.name}: Answer must be between 0 and 3.")
+                    continue
                 
-            if not isinstance(item["choices"], list) or len(item["choices"]) != 4:
-                raise ValueError(f"Choices must be an array of exactly 4 strings in {file_path.name}.")
-                
-            correct_idx = int(item["answer"]) + 1
-            if correct_idx < 1 or correct_idx > 4:
-                raise ValueError(f"Answer must be between 0 and 3 in {file_path.name}.")
-                
-            # Extract optional context
-            context_text = None
-            if "passage" in item:
-                context_text = str(item["passage"])
-            elif "script" in item:
-                context_text = str(item["script"])
-            elif "context" in item:
-                context_text = str(item["context"])
-                
-            questions.append(
-                Question(
+                # Extract optional context
+                context_text = None
+                if "passage" in item:
+                    context_text = str(item["passage"])
+                elif "script" in item:
+                    context_text = str(item["script"])
+                elif "context" in item:
+                    context_text = str(item["context"])
+                    
+                # Extract optional audio
+                audio_file = None
+                if "audio" in item:
+                    audio_file = str(item["audio"])
+                    
+                q = Question(
                     text=str(item["question"]),
                     choices=[str(c) for c in item["choices"]],
                     correct_index=correct_idx,
                     context=context_text
                 )
-            )
+                q.audio = audio_file
+                questions.append(q)
+            
+            except Exception as e:
+                print(f"Skipping invalid question in {file_path.name}: {e}")
+                continue
+
         return questions

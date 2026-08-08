@@ -14,6 +14,7 @@ from core.scene_manager import SceneManager
 from scenes.campus_scene import CampusScene
 from scenes.building_scene import BuildingScene
 from scenes.question_scene import QuestionScene
+from scenes.celebration_scene import CelebrationScene
 from player.profile import PlayerProfile
 from core.save_manager import SaveManager
 from core.quest_manager import QuestManager
@@ -78,10 +79,12 @@ class Game:
         campus = CampusScene(self.scene_manager)
         building = BuildingScene(self.scene_manager)
         question = QuestionScene(self.scene_manager)
+        celebration = CelebrationScene(self.scene_manager)
         
         self.scene_manager.register_scene("campus", campus)
         self.scene_manager.register_scene("building", building)
         self.scene_manager.register_scene("question", question)
+        self.scene_manager.register_scene("celebration", celebration)
         
         # Start in Campus
         self.scene_manager.switch_scene("campus")

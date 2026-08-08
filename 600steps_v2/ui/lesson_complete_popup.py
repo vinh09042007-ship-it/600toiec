@@ -5,7 +5,7 @@ class LessonCompletePopup(Entity):
     """
     Displays a centered completion popup after finishing a non-exam lesson.
     """
-    def __init__(self, camera_ui, title: str, score: int, total: int, next_lesson: str, on_close: callable):
+    def __init__(self, camera_ui, title: str, correct: int, wrong: int, accuracy: float, passed: bool, on_close: callable):
         super().__init__(parent=camera_ui)
         self.on_close = on_close
         
@@ -18,14 +18,16 @@ class LessonCompletePopup(Entity):
             position=(0, 0)
         )
         
-        # Elements (start fully transparent)
+        # Result Header
+        header_str = "PASS" if passed else "FAIL"
+        header_color = color.green if passed else color.red
         self.header_text = Text(
             parent=self.bg,
-            text="Lesson Complete!",
+            text=header_str,
             origin=(0, 0),
             position=(0, 0.35),
-            scale=3,
-            color=color.rgba(0, 255, 0, 0)
+            scale=4,
+            color=color.rgba(header_color.r, header_color.g, header_color.b, 0)
         )
         
         self.title_text = Text(
@@ -33,43 +35,23 @@ class LessonCompletePopup(Entity):
             text=title,
             origin=(0, 0),
             position=(0, 0.20),
-            scale=4,
+            scale=3,
             color=color.rgba(255, 215, 0, 0)
         )
         
+        stats_str = f"Correct Answers: {correct}\nWrong Answers: {wrong}\nAccuracy: {accuracy:.1f}%"
         self.score_text = Text(
             parent=self.bg,
-            text=f"Score:\n{score} / {total} Correct",
+            text=stats_str,
             origin=(0, 0),
             position=(0, -0.05),
             scale=2,
             color=color.rgba(255, 255, 255, 0)
         )
         
-        if next_lesson:
-            self.next_unlocked_header = Text(
-                parent=self.bg,
-                text="Next Lesson Unlocked",
-                origin=(0, 0),
-                position=(0, -0.25),
-                scale=1.5,
-                color=color.rgba(0, 255, 255, 0)
-            )
-            self.next_unlocked_text = Text(
-                parent=self.bg,
-                text=next_lesson,
-                origin=(0, 0),
-                position=(0, -0.32),
-                scale=2,
-                color=color.rgba(255, 255, 255, 0)
-            )
-        else:
-            self.next_unlocked_header = None
-            self.next_unlocked_text = None
-            
         self.instruction_text = Text(
             parent=self.bg,
-            text="[ENTER] Continue",
+            text="[ENTER] Return to Campus",
             origin=(0, 0),
             position=(0, -0.45),
             scale=1.5,
@@ -78,12 +60,9 @@ class LessonCompletePopup(Entity):
         
         # Fade in animation
         self.bg.animate_color(color.rgba(0, 0, 0, 0.9), duration=0.5)
-        self.header_text.animate_color(color.green, duration=0.5)
+        self.header_text.animate_color(header_color, duration=0.5)
         self.title_text.animate_color(color.gold, duration=0.5)
         self.score_text.animate_color(color.white, duration=0.5)
-        if self.next_unlocked_header:
-            self.next_unlocked_header.animate_color(color.cyan, duration=0.5)
-            self.next_unlocked_text.animate_color(color.white, duration=0.5)
         self.instruction_text.animate_color(color.light_gray, duration=0.5)
         
         self.creation_time = time.time()
@@ -109,12 +88,9 @@ class LessonCompletePopup(Entity):
         
         # Fade out
         self.bg.animate_color(color.rgba(0, 0, 0, 0), duration=0.3)
-        self.header_text.animate_color(color.rgba(0, 255, 0, 0), duration=0.3)
+        self.header_text.animate_color(color.rgba(self.header_text.color.r, self.header_text.color.g, self.header_text.color.b, 0), duration=0.3)
         self.title_text.animate_color(color.rgba(255, 215, 0, 0), duration=0.3)
         self.score_text.animate_color(color.rgba(255, 255, 255, 0), duration=0.3)
-        if self.next_unlocked_header:
-            self.next_unlocked_header.animate_color(color.rgba(0, 255, 255, 0), duration=0.3)
-            self.next_unlocked_text.animate_color(color.rgba(255, 255, 255, 0), duration=0.3)
         self.instruction_text.animate_color(color.rgba(200, 200, 200, 0), duration=0.3)
             
         Sequence(
@@ -128,5 +104,5 @@ class LessonCompletePopup(Entity):
         destroy(self)
 
     @classmethod
-    def show(cls, camera_ui, title: str, score: int, total: int, next_lesson: str, on_close: callable):
-        return cls(camera_ui, title, score, total, next_lesson, on_close)
+    def show(cls, camera_ui, title: str, correct: int, wrong: int, accuracy: float, passed: bool, on_close: callable):
+        return cls(camera_ui, title, correct, wrong, accuracy, passed, on_close)

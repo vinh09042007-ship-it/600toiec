@@ -43,7 +43,11 @@ class CampusScene(BaseScene):
         
         self.player_camera = PlayerCamera(self.player_controller.player)
         
-        self.interaction_manager = InteractionManager(self.player_controller.player, self.campus)
+        self.interaction_manager = InteractionManager(
+            self.player_controller.player, 
+            self.campus, 
+            quest_manager=self.scene_manager.quest_manager
+        )
         self.interaction_manager.on_interact = self._on_building_interact
         self.interaction_manager.on_talk = self._on_npc_talk
         
@@ -133,7 +137,10 @@ class CampusScene(BaseScene):
                 self.scene_manager.switch_scene("building", building_name=building_name)
         else:
             requirement = quest_manager.get_building_lock_requirement(building_name)
-            quest_manager.notification_ui.show(f"Building Locked\n{requirement}")
+            if "🔒" in requirement:
+                quest_manager.notification_ui.show(requirement)
+            else:
+                quest_manager.notification_ui.show(f"Building Locked\n{requirement}")
 
     def _on_npc_talk(self, npc: NPC) -> None:
         """Callback triggered when the player talks to an NPC."""

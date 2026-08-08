@@ -1,28 +1,33 @@
 {
     "player_name": "Student",
-    "total_score": 200,
-    "total_exp": 1800,
-    "total_coins": 900,
-    "current_level": 19,
-    "total_correct_answers": 20,
-    "total_wrong_answers": 13,
-    "total_practices": 8,
-    "highest_score": 40,
+    "total_score": 930,
+    "total_exp": 3260,
+    "total_coins": 1630,
+    "current_level": 33,
+    "target_toeic_score": 600,
+    "total_correct_answers": 93,
+    "total_wrong_answers": 120,
+    "total_practices": 30,
+    "highest_score": 90,
     "building_stats": {
         "Grammar": {
-            "completed": 4
+            "completed": 5,
+            "passed": true
         },
         "Vocabulary": {
-            "completed": 2
+            "completed": 7,
+            "passed": true
         },
         "Listening": {
-            "completed": 0
+            "completed": 4,
+            "passed": true
         },
         "Reading": {
-            "completed": 0
+            "completed": 7,
+            "passed": true
         },
         "Exam": {
-            "completed": 2
+            "completed": 7
         }
     },
     "active_quest_id": null,

@@ -1,0 +1,242 @@
+[
+    {
+        "script": "W: Hi Mark. Did you finish the quarterly report? The manager needs it by noon.\nM: I'm almost done. I just need to verify the sales figures from last month.\nW: Great, let me know if you need any help checking the numbers.",
+        "question": "What are the speakers discussing?",
+        "choices": [
+            "A quarterly report",
+            "A new marketing campaign",
+            "A budget proposal",
+            "A job interview"
+        ],
+        "answer": 0,
+        "audio": "q001.ogg"
+    },
+    {
+        "script": "M: Hello, this is David from IT support. I'm returning your call about the printer issue.\nW: Yes, thank you. The printer on the third floor is jamming constantly.\nM: I'll come up and take a look at it right after my current appointment.",
+        "question": "Who is the man?",
+        "choices": [
+            "A sales representative",
+            "An IT technician",
+            "A building manager",
+            "A receptionist"
+        ],
+        "answer": 1,
+        "audio": "q002.ogg"
+    },
+    {
+        "script": "Attention all passengers on Flight 4B to Tokyo. The departure gate has been changed to Gate 15. Please proceed to Gate 15 immediately, as boarding will commence in ten minutes. Have your boarding passes ready.",
+        "question": "Where is this announcement taking place?",
+        "choices": [
+            "At a train station",
+            "At an airport",
+            "At a bus terminal",
+            "At a ferry port"
+        ],
+        "answer": 1,
+        "audio": "q003.ogg"
+    },
+    {
+        "script": "W: Good evening, sir. Welcome to the Grand Hotel. Do you have a reservation?\nM: Yes, the name is John Miller. It should be a single room for three nights.\nW: Ah, yes. Here it is. Could you please fill out this registration form?",
+        "question": "What does the woman ask the man to do?",
+        "choices": [
+            "Pay for his room",
+            "Provide a credit card",
+            "Fill out a form",
+            "Wait in the lobby"
+        ],
+        "answer": 2,
+        "audio": "q004.ogg"
+    },
+    {
+        "script": "M: Let's begin the meeting. The main item on the agenda is the upcoming merger.\nW: I've prepared a presentation outlining the potential benefits and risks.\nM: Excellent. Let's start with the financial projections.",
+        "question": "What is the main topic of the meeting?",
+        "choices": [
+            "A company merger",
+            "A new product launch",
+            "An employee training program",
+            "A marketing strategy"
+        ],
+        "answer": 0,
+        "audio": "q005.ogg"
+    },
+    {
+        "script": "W: Thank you for calling Tech Solutions. How can I assist you today?\nM: I ordered a laptop online last week, but I haven't received a tracking number yet.\nW: I apologize for the delay. Let me check the status of your order using your order number.",
+        "question": "Why is the man calling?",
+        "choices": [
+            "To cancel an order",
+            "To request a refund",
+            "To check his order status",
+            "To report a broken item"
+        ],
+        "answer": 2,
+        "audio": "q006.ogg"
+    },
+    {
+        "script": "M: Excuse me, do you have these shoes in a size 10?\nW: Let me check the back room for you. We might have received a new shipment this morning.\nM: Thank you. I really like this color.",
+        "question": "What will the woman probably do next?",
+        "choices": [
+            "Ring up a purchase",
+            "Check the inventory",
+            "Recommend another store",
+            "Ask the man for his receipt"
+        ],
+        "answer": 1,
+        "audio": "q007.ogg"
+    },
+    {
+        "script": "Attention shoppers. The store will be closing in 15 minutes. Please bring your final purchases to the checkout counters at the front of the store. Thank you for shopping with us today.",
+        "question": "What are the listeners asked to do?",
+        "choices": [
+            "Leave the store immediately",
+            "Return items to the shelves",
+            "Go to the checkout counters",
+            "Wait for a manager"
+        ],
+        "answer": 2,
+        "audio": "q008.ogg"
+    },
+    {
+        "script": "W: Are you going to the company picnic this Saturday?\nM: I'm not sure. I have to take my car to the mechanic in the morning.\nW: Well, if you need a ride, I can pick you up on my way there.",
+        "question": "What does the woman offer to do?",
+        "choices": [
+            "Pay for the repairs",
+            "Give the man a ride",
+            "Bring food to the picnic",
+            "Fix the man's car"
+        ],
+        "answer": 1,
+        "audio": "q009.ogg"
+    },
+    {
+        "script": "M: How was your business trip to Berlin?\nW: It was very productive, but the flight back was exhausting. We were delayed for four hours due to a storm.\nM: That sounds terrible. At least you made it back in time for the presentation.",
+        "question": "Why was the woman's flight delayed?",
+        "choices": [
+            "Mechanical issues",
+            "A pilot strike",
+            "Bad weather",
+            "Overbooking"
+        ],
+        "answer": 2,
+        "audio": "q010.ogg"
+    },
+    {
+        "script": "W: Can you look over this email before I send it to the client?\nM: Sure. Oh, I noticed a typo in the second paragraph. You wrote 'accept' instead of 'except'.\nW: Thanks for catching that. I'll fix it right now.",
+        "question": "What is the problem with the email?",
+        "choices": [
+            "It is too long",
+            "It has a spelling error",
+            "It is addressed incorrectly",
+            "It lacks an attachment"
+        ],
+        "answer": 1,
+        "audio": "q011.ogg"
+    },
+    {
+        "script": "M: Hello, I'd like to book a table for four people for tomorrow night at 7:30.\nW: I'm sorry, sir, but we are fully booked until 8:30. Would you like me to reserve a table for you then?\nM: Yes, 8:30 works fine.",
+        "question": "What is the man trying to do?",
+        "choices": [
+            "Cancel a reservation",
+            "Book a flight",
+            "Make a restaurant reservation",
+            "Order food for delivery"
+        ],
+        "answer": 2,
+        "audio": "q012.ogg"
+    },
+    {
+        "script": "W: Sir, your carry-on bag is too large to fit in the overhead compartment. You will need to check it at the gate.\nM: Will there be an extra charge for that?\nW: No, since it's a gate check, it will be complimentary.",
+        "question": "What must the man do with his bag?",
+        "choices": [
+            "Place it under the seat",
+            "Check it at the gate",
+            "Leave it at security",
+            "Pay an extra fee"
+        ],
+        "answer": 1,
+        "audio": "q013.ogg"
+    },
+    {
+        "script": "M: Room service. I have your order of a club sandwich and a pot of coffee.\nW: Thank you. You can just set the tray on the table by the window.\nM: Certainly. Please sign here for the bill.",
+        "question": "Who is the man?",
+        "choices": [
+            "A hotel guest",
+            "A room service attendant",
+            "A front desk clerk",
+            "A chef"
+        ],
+        "answer": 1,
+        "audio": "q014.ogg"
+    },
+    {
+        "script": "W: Next on the agenda is the budget for the third quarter. As you can see on the chart, our marketing expenses have increased by 15%.\nM: We need to find a way to reduce those costs without compromising our campaign quality.",
+        "question": "What has happened to the marketing expenses?",
+        "choices": [
+            "They have decreased",
+            "They have stayed the same",
+            "They have increased by 15%",
+            "They have been eliminated"
+        ],
+        "answer": 2,
+        "audio": "q015.ogg"
+    },
+    {
+        "script": "M: Hello, my internet connection has been dropping frequently since yesterday.\nW: I'm sorry to hear that. I can run a diagnostic test on your modem remotely. Please give me your account number.",
+        "question": "What will the woman do?",
+        "choices": [
+            "Send a technician",
+            "Replace the modem",
+            "Run a remote diagnostic test",
+            "Refund the customer's money"
+        ],
+        "answer": 2,
+        "audio": "q016.ogg"
+    },
+    {
+        "script": "W: I bought this sweater here yesterday, but it's too small. Can I exchange it for a larger size?\nM: Of course. Do you have the original receipt?\nW: Yes, it's right here in the bag.",
+        "question": "What does the woman want to do?",
+        "choices": [
+            "Get a refund",
+            "Exchange an item",
+            "Buy a new sweater",
+            "Speak to the manager"
+        ],
+        "answer": 1,
+        "audio": "q017.ogg"
+    },
+    {
+        "script": "The next train arriving at Platform 3 is the express service to Central Station. This train will not stop at Green Park or Riverside. Passengers traveling to those stations should wait for the local service arriving in ten minutes.",
+        "question": "Which station will the express train NOT stop at?",
+        "choices": [
+            "Central Station",
+            "Platform 3",
+            "Green Park",
+            "The Airport"
+        ],
+        "answer": 2,
+        "audio": "q018.ogg"
+    },
+    {
+        "script": "M: Did you hear that Sarah is leaving the company next month?\nW: Yes, she told me she got a new job closer to her home. We should organize a farewell party for her.\nM: That's a great idea. I'll ask the team to chip in for a gift.",
+        "question": "Why is Sarah leaving the company?",
+        "choices": [
+            "She is retiring",
+            "She got a new job",
+            "She is moving to another city",
+            "She is unhappy with her salary"
+        ],
+        "answer": 1,
+        "audio": "q019.ogg"
+    },
+    {
+        "script": "W: Welcome aboard. Could you please show me your ticket?\nM: Here it is. Seat 12A.\nW: Thank you. Your seat is down this aisle on the left side, by the window.",
+        "question": "Where is the man's seat located?",
+        "choices": [
+            "Near the exit",
+            "On the right side",
+            "By the window",
+            "At the back of the plane"
+        ],
+        "answer": 2,
+        "audio": "q020.ogg"
+    }
+]
