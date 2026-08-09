@@ -330,11 +330,11 @@ class QuestionScene(BaseScene):
                         qm._complete_active_quest()
                         print("[TRACE] QuestionScene: Quest completed")
                 
-                # Directly transition to celebration scene without showing popup
+                # Directly transition to graduation sequence without showing popup
                 if hasattr(self.scene_manager, 'transition_manager'):
-                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "celebration", final_score=displayed_score, correct_answers=self.score_manager.correct_answers)
+                    self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus", final_score=displayed_score, game_completed=True)
                 else:
-                    self.scene_manager.switch_scene("celebration", final_score=displayed_score, correct_answers=self.score_manager.correct_answers)
+                    self.scene_manager.switch_scene("campus", final_score=displayed_score, game_completed=True)
                 return
             else:
                 self.rating_ui = RatingPopup.show(
@@ -447,9 +447,9 @@ class QuestionScene(BaseScene):
                 is_exam = self.building_name.lower() == "exam"
                 if is_exam and key in ('enter', 'return') and getattr(self, 'exam_passed', False):
                     if hasattr(self.scene_manager, 'transition_manager'):
-                        self.scene_manager.transition_manager.transition_to(self.scene_manager, "celebration", final_score=self.score_manager.correct_answers * 100)
+                        self.scene_manager.transition_manager.transition_to(self.scene_manager, "campus", final_score=self.score_manager.correct_answers * 100, game_completed=True)
                     else:
-                        self.scene_manager.switch_scene("celebration", final_score=self.score_manager.correct_answers * 100)
+                        self.scene_manager.switch_scene("campus", final_score=self.score_manager.correct_answers * 100, game_completed=True)
                 else:
                     # Normal return to campus or failure return
                     if key in ('escape', 'enter', 'return'): 

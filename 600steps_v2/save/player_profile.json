@@ -1,17 +1,17 @@
 {
     "player_name": "Test",
-    "total_score": 1290,
-    "total_exp": 3980,
-    "total_coins": 1990,
-    "current_level": 40,
+    "total_score": 1600,
+    "total_exp": 4600,
+    "total_coins": 2300,
+    "current_level": 47,
     "target_toeic_score": 600,
-    "total_correct_answers": 129,
-    "total_wrong_answers": 101,
-    "total_practices": 23,
+    "total_correct_answers": 160,
+    "total_wrong_answers": 120,
+    "total_practices": 28,
     "highest_score": 90,
     "building_stats": {
         "Grammar": {
-            "completed": 0,
+            "completed": 1,
             "passed": true
         },
         "Vocabulary": {
@@ -19,7 +19,7 @@
             "passed": true
         },
         "Listening": {
-            "completed": 1,
+            "completed": 2,
             "passed": true
         },
         "Reading": {
@@ -27,7 +27,7 @@
             "passed": true
         },
         "Exam": {
-            "completed": 22
+            "completed": 25
         }
     },
     "active_quest_id": null,
